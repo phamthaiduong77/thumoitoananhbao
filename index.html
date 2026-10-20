@@ -336,8 +336,8 @@
             color: var(--primary-red);
         }
 
-        /* ================= 4. ADMIN PANEL ================= */
-        .admin-modal {
+        /* ================= 4. ADMIN PANEL & MODALS ================= */
+        .admin-modal, .custom-confirm-modal {
             display: none;
             position: fixed;
             inset: 0;
@@ -370,7 +370,7 @@
         }
 
         .admin-header {
-            max-width: 950px; /* Tăng rộng chút cho bảng hiển thị đẹp */
+            max-width: 1000px;
             margin: 0 auto 20px;
             display: flex;
             justify-content: space-between;
@@ -382,7 +382,7 @@
         }
 
         .admin-content {
-            max-width: 950px;
+            max-width: 1000px;
             margin: 0 auto;
             background: #FFFFFF;
             padding: 24px;
@@ -407,59 +407,21 @@
 
         .stat-num { font-size: 34px; font-weight: 900; color: var(--primary-red); }
 
-        .search-container {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 16px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .search-input {
-            flex: 1;
-            min-width: 200px;
-            padding: 11px 16px;
-            background: #F1F5F9;
-            border: 1.5px solid #CBD5E1;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-dark);
-            transition: all 0.2s;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary-red);
-            background: #FFFFFF;
-            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-        }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #E2E8F0; font-size: 14px; }
         th { font-weight: 700; color: var(--text-muted); background: #F8FAFC; }
 
-        /* Nút xóa trong bảng */
         .btn-delete {
-            background: #FEE2E2;
-            color: #DC2626;
-            border: 1px solid #FCA5A5;
-            padding: 6px 12px;
-            border-radius: 8px;
+            background: none;
+            border: none;
+            color: #EF4444;
             cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            font-size: 18px;
+            padding: 6px;
+            border-radius: 6px;
+            transition: 0.2s;
         }
-
-        .btn-delete:hover {
-            background: #DC2626;
-            color: #FFFFFF;
-            border-color: #DC2626;
-            transform: scale(1.05);
-        }
+        .btn-delete:hover { background: #FEE2E2; }
 
         /* Floating particles */
         .math-particle {
@@ -484,7 +446,7 @@
             .glass-card { padding: 28px 20px; }
             .envelope-wrapper { max-width: 320px; height: 210px; }
             .wax-seal { width: 56px; height: 56px; font-size: 20px; }
-            .search-container { flex-direction: column; align-items: stretch; }
+            .admin-header { flex-direction: column; gap: 15px; }
         }
     </style>
 </head>
@@ -594,10 +556,23 @@
     <div id="adminModal" class="admin-modal">
         <div class="admin-box">
             <h3 style="margin-bottom: 18px; font-size: 20px; color: var(--text-dark);">Đăng Nhập Quản Trị</h3>
-            <input type="password" id="adminPwd" class="form-input" placeholder="Mật khẩu Admin..." style="margin-bottom: 15px;" onkeypress="if(event.key==='Enter') verifyAdminPassword()">
+            <input type="password" id="adminPwd" class="form-input" placeholder="Mật khẩu Admin..." style="margin-bottom: 15px;">
             <button onclick="verifyAdminPassword()" class="btn-primary" style="margin-bottom: 10px;">Đăng Nhập</button>
             <button onclick="closeAdminModal()" class="btn-primary btn-outline" style="padding: 10px;">Đóng</button>
             <p id="adminError" style="color: var(--primary-red); font-size: 13px; margin-top: 10px; display: none;">Mật khẩu không đúng!</p>
+        </div>
+    </div>
+
+    <!-- CUSTOM CONFIRM DELETE MODAL -->
+    <div id="confirmDeleteModal" class="custom-confirm-modal" style="z-index: 10005;">
+        <div class="admin-box" style="max-width: 380px;">
+            <div style="font-size: 40px; margin-bottom: 10px;">⚠️</div>
+            <h3 style="font-size: 20px; color: var(--text-dark); margin-bottom: 15px;">XÁC NHẬN XÓA</h3>
+            <p id="confirmDeleteMsg" style="color: var(--text-muted); font-size: 15px; margin-bottom: 25px; line-height: 1.5;"></p>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="executeDelete()" class="btn-primary" style="background: #EF4444; box-shadow: none;">Có, Xóa luôn</button>
+                <button onclick="closeConfirmModal()" class="btn-primary btn-outline" style="color: #64748B; border-color: #CBD5E1;">Hủy</button>
+            </div>
         </div>
     </div>
 
@@ -624,7 +599,7 @@
                 </div>
             </div>
 
-            <!-- TÌM KIẾM TÊN TỚI THỜI GIAN THỰC -->
+            <!-- TÌM KIẾM -->
             <div style="margin-bottom: 18px; display: flex; gap: 10px; flex-wrap: wrap;">
                 <input type="text" id="search-input" class="form-input" placeholder="🔍 Tìm kiếm theo tên người phản hồi..." oninput="filterTableByName()" style="flex: 1; min-width: 220px;">
                 <button onclick="fetchRSVPData()" class="btn-primary" style="width: auto; padding: 12px 20px; font-size: 14px; white-space: nowrap;">🔄 Làm Mới</button>
@@ -639,7 +614,7 @@
                             <th>Trạng Thái</th>
                             <th>Đi Cùng</th>
                             <th>Lời Nhắn</th>
-                            <th style="text-align: center;">Thao Tác</th> <!-- Cột mới thêm -->
+                            <th style="text-align:center;">Thao Tác</th>
                         </tr>
                     </thead>
                     <tbody id="rsvp-table-body">
@@ -657,7 +632,8 @@
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndlZXFwbGVqcXFkcGpqZGd1eXN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MDMyNTEsImV4cCI6MjEwODA3OTI1MX0.mOklk9JEb-Hp5kN9Kx-ucGuJ-LyLDPtOCLS3u2AJIok";
 
         let isOpened = false;
-        let globalRSVPData = []; // Lưu bộ dữ liệu để phục vụ tìm kiếm
+        let globalRSVPData = []; 
+        let pendingDeleteId = null;
 
         /* ================= 1. MỞ PHONG BÌ 3D ================= */
         function handleOpenEnvelope(e) {
@@ -685,9 +661,10 @@
 
         /* ================= 2. HIỆU ỨNG HẠT TOÁN HỌC ================= */
         const mathSymbols = ['π', '√x', '∫', 'Σ', '∞', 'lim', 'α', 'β', 'f(x)'];
-        
         document.addEventListener('click', (e) => {
-            if (isOpened) spawnParticle(e.clientX, e.clientY);
+            if (isOpened && !e.target.closest('.admin-panel') && !e.target.closest('.admin-modal') && !e.target.closest('.custom-confirm-modal')) {
+                spawnParticle(e.clientX, e.clientY);
+            }
         });
 
         function spawnParticle(x, y) {
@@ -721,13 +698,13 @@
             const lastSubmitTs = localStorage.getItem('last_rsvp_ts');
             if (lastSubmitTs && (Date.now() - parseInt(lastSubmitTs)) < COOLDOWN_MS) {
                 const remainingSec = Math.ceil((COOLDOWN_MS - (Date.now() - parseInt(lastSubmitTs))) / 1000);
-                showFeedback(`⏳ Bạn vừa gửi phản hồi. Vui lòng đợi ${remainingSec} giây nữa trước khi gửi lại!`, "red");
+                showFeedback(`⏳ Bạn vừa gửi. Vui lòng đợi ${remainingSec} giây nữa trước khi gửi lại!`, "red");
                 return;
             }
 
             const btn = document.getElementById('submit-btn');
             btn.disabled = true;
-            btn.innerText = "⏳ ĐANG GỬI PHẢN HỒI...";
+            btn.innerText = "⏳ ĐANG GỬI...";
 
             const payload = {
                 name: document.getElementById('input-name').value.trim(),
@@ -749,10 +726,7 @@
                     body: JSON.stringify(payload)
                 });
 
-                if (!response.ok) {
-                    const errText = await response.text();
-                    throw new Error(`Mã lỗi ${response.status}: ${errText}`);
-                }
+                if (!response.ok) throw new Error("Lỗi máy chủ!");
 
                 localStorage.setItem('last_rsvp_ts', Date.now().toString());
                 showFeedback("🎉 Cảm ơn bạn đã gửi phản hồi thành công!", "#10B981");
@@ -765,10 +739,9 @@
                 }, 4000);
 
             } catch (err) {
-                console.error(err);
                 btn.disabled = false;
                 btn.innerText = "THỬ LẠI";
-                showFeedback(`❌ Lỗi gửi phản hồi: ${err.message}`, "red");
+                showFeedback(`❌ Lỗi gửi: Vui lòng thử lại.`, "red");
             }
         }
 
@@ -779,13 +752,9 @@
         }
 
         /* ================= 4. ADMIN DASHBOARD ================= */
-        function openAdminModal() {
-            document.getElementById('adminModal').style.display = 'flex';
-        }
-
-        function closeAdminModal() {
-            document.getElementById('adminModal').style.display = 'none';
-        }
+        function openAdminModal() { document.getElementById('adminModal').style.display = 'flex'; }
+        function closeAdminModal() { document.getElementById('adminModal').style.display = 'none'; }
+        function closeAdminPanel() { document.getElementById('adminPanel').style.display = 'none'; }
 
         function verifyAdminPassword() {
             const pwd = document.getElementById('adminPwd').value.trim();
@@ -800,16 +769,11 @@
             }
         }
 
-        function closeAdminPanel() {
-            document.getElementById('adminPanel').style.display = 'none';
-        }
-
         async function fetchRSVPData() {
             const tbody = document.getElementById('rsvp-table-body');
             tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Đang tải dữ liệu...</td></tr>';
 
             try {
-                // Lấy toàn bộ dữ liệu bao gồm cả cột 'id' để phục vụ việc XÓA
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/rsvps?select=*&order=created_at.desc`, {
                     method: 'GET',
                     headers: {
@@ -819,32 +783,26 @@
                     }
                 });
 
-                if (!response.ok) {
-                    const errBody = await response.text();
-                    throw new Error(`HTTP ${response.status}: ${errBody}`);
-                }
+                if (!response.ok) throw new Error("Lỗi tải dữ liệu");
 
                 globalRSVPData = await response.json();
-                
-                // Thống kê tổng quan
-                let attend = 0, guests = 0, absent = 0;
-                globalRSVPData.forEach(item => {
-                    const isYes = item.status && item.status.includes('Có');
-                    if (isYes) { attend++; guests += (parseInt(item.guests) || 0); }
-                    else absent++;
-                });
-
-                document.getElementById('stat-attending').innerText = attend;
-                document.getElementById('stat-guests').innerText = guests;
-                document.getElementById('stat-absent').innerText = absent;
-
-                // Render dữ liệu bảng với trạng thái Search hiện tại
-                filterTableByName();
-
+                updateStats(globalRSVPData);
+                renderTableData(globalRSVPData);
             } catch(e) {
-                console.error("Lỗi fetch:", e);
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; font-weight:bold;">Không thể tải dữ liệu: ${e.message}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Lỗi kết nối CSDL.</td></tr>`;
             }
+        }
+
+        function updateStats(dataList) {
+            let attend = 0, guests = 0, absent = 0;
+            dataList.forEach(item => {
+                const isYes = item.status && item.status.includes('Có');
+                if (isYes) { attend++; guests += (parseInt(item.guests) || 0); }
+                else absent++;
+            });
+            document.getElementById('stat-attending').innerText = attend;
+            document.getElementById('stat-guests').innerText = guests;
+            document.getElementById('stat-absent').innerText = absent;
         }
 
         function renderTableData(dataList) {
@@ -852,54 +810,61 @@
             tbody.innerHTML = '';
 
             if (!Array.isArray(dataList) || dataList.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Không tìm thấy dữ liệu phù hợp.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Không tìm thấy dữ liệu.</td></tr>';
                 return;
             }
 
             dataList.forEach(item => {
                 const isYes = item.status && item.status.includes('Có');
                 const d = new Date(item.created_at || Date.now());
-                const timeStr = `${d.getDate()}/${d.getMonth()+1} ${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`;
-                const safeName = escapeHtml(item.name || '-');
+                const timeStr = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
 
                 tbody.innerHTML += `
                     <tr>
                         <td style="color:#64748B; font-size:12px;">${timeStr}</td>
-                        <td style="font-weight:700;">${safeName}</td>
-                        <td><span style="padding:4px 8px; border-radius:6px; font-weight:700; font-size:12px; background:${isYes ? '#DEF7EC' : '#FDE8E8'}; color:${isYes ? '#03543F' : '#9B1C1C'}">${escapeHtml(item.status || '-')}</span></td>
+                        <td style="font-weight:700;">${item.name || '-'}</td>
+                        <td><span style="padding:4px 8px; border-radius:6px; font-weight:700; font-size:12px; background:${isYes ? '#DEF7EC' : '#FDE8E8'}; color:${isYes ? '#03543F' : '#9B1C1C'}">${item.status || '-'}</span></td>
                         <td style="text-align:center;">${item.guests || 0}</td>
-                        <td>${escapeHtml(item.message || '-')}</td>
+                        <td>${item.message || '-'}</td>
                         <td style="text-align:center;">
-                            <button class="btn-delete" onclick="deleteRSVP('${item.id}', '${safeName}')" title="Xóa phản hồi này">🗑️</button>
+                            <button onclick="openConfirmModal('${item.id}', '${(item.name || 'Không tên').replace(/'/g, "\\'")}')" class="btn-delete" title="Xóa phản hồi này">🗑️</button>
                         </td>
                     </tr>
                 `;
             });
         }
 
-        /* TÌM KIẾM TÊN */
         function filterTableByName() {
             const query = document.getElementById('search-input').value.toLowerCase().trim();
             if (!query) {
                 renderTableData(globalRSVPData);
                 return;
             }
-            const filtered = globalRSVPData.filter(item => 
-                (item.name || '').toLowerCase().includes(query)
-            );
+            const filtered = globalRSVPData.filter(item => (item.name || '').toLowerCase().includes(query));
             renderTableData(filtered);
         }
 
-        /* ================= 5. HÀM XÓA PHẢN HỒI (DELETE) ================= */
-        async function deleteRSVP(id, name) {
-            // Popup cảnh báo xác nhận trước khi xóa
-            const confirmDelete = window.confirm(`CẢNH BÁO!\nBạn có chắc chắn muốn XÓA vĩnh viễn phản hồi của "${name}" không?\n\nHành động này không thể hoàn tác!`);
+        /* ================= 5. CUSTOM DELETE CONFIRMATION ================= */
+        function openConfirmModal(id, name) {
+            pendingDeleteId = id;
+            document.getElementById('confirmDeleteMsg').innerHTML = `Bạn có chắc chắn muốn <b>XÓA vĩnh viễn</b> phản hồi của <b>"${name}"</b> không?<br><br><span style="color:#EF4444; font-size:13px;">Hành động này không thể hoàn tác!</span>`;
+            document.getElementById('confirmDeleteModal').style.display = 'flex';
+        }
+
+        function closeConfirmModal() {
+            pendingDeleteId = null;
+            document.getElementById('confirmDeleteModal').style.display = 'none';
+        }
+
+        async function executeDelete() {
+            if (!pendingDeleteId) return;
             
-            if (!confirmDelete) return; // Nếu chọn Cancel thì dừng lại
+            const btnDelete = document.querySelector('#confirmDeleteModal .btn-primary');
+            btnDelete.innerText = 'Đang xóa...';
+            btnDelete.disabled = true;
 
             try {
-                // Gửi lệnh DELETE tới Supabase (dựa vào ID)
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/rsvps?id=eq.${id}`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/rsvps?id=eq.${pendingDeleteId}`, {
                     method: 'DELETE',
                     headers: {
                         'apikey': SUPABASE_KEY,
@@ -907,28 +872,19 @@
                     }
                 });
 
-                if (!response.ok) {
-                    const errText = await response.text();
-                    throw new Error(`Mã lỗi ${response.status}: ${errText}`);
-                }
+                if (!response.ok) throw new Error("Xóa thất bại");
+                
+                // Cập nhật lại UI sau khi xóa thành công
+                closeConfirmModal();
+                document.getElementById('search-input').value = ''; // Reset thanh tìm kiếm
+                fetchRSVPData(); // Tải lại bảng và thống kê
 
-                // Nếu xóa thành công, tiến hành Tải lại toàn bộ dữ liệu bảng & thống kê
-                alert(`✓ Đã xóa thành công phản hồi của "${name}".`);
-                fetchRSVPData();
-
-            } catch (err) {
-                console.error("Lỗi xóa:", err);
-                alert(`❌ Đã xảy ra lỗi khi xóa: ${err.message}`);
+            } catch (error) {
+                alert("Lỗi: Không thể xóa dữ liệu lúc này!");
+            } finally {
+                btnDelete.innerText = 'Có, Xóa luôn';
+                btnDelete.disabled = false;
             }
-        }
-
-        function escapeHtml(str) {
-            if (!str) return '';
-            return String(str).replace(/[&<>"'`=\/]/g, function (s) {
-                return {
-                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '/': '&#x2F;', '`': '&#x60;', '=': '&#x3D;'
-                }[s];
-            });
         }
     </script>
 </body>
