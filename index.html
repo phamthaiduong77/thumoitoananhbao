@@ -77,10 +77,7 @@
 
         .envelope-flap {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(180deg, #EF4444, #DC2626);
             clip-path: polygon(0 0, 100% 0, 50% 55%);
             transform-origin: top;
@@ -100,11 +97,9 @@
 
         .wax-seal {
             position: absolute;
-            top: 52%;
-            left: 50%;
+            top: 52%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 68px;
-            height: 68px;
+            width: 68px; height: 68px;
             background: #FFFFFF;
             color: var(--primary-red);
             border: 3px solid var(--primary-red);
@@ -138,7 +133,6 @@
 
         @keyframes blinkText { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
 
-        /* Envelope Open Animation */
         .envelope-wrapper.open .envelope-flap {
             transform: rotateX(180deg);
             z-index: 1;
@@ -148,7 +142,7 @@
             opacity: 0;
         }
 
-        /* ================= 2. MAIN CONTAINER & GLASSCARDS ================= */
+        /* ================= 2. MAIN CONTAINER & GLASS CARDS ================= */
         .container {
             max-width: 720px;
             margin: 0 auto;
@@ -203,9 +197,7 @@
             margin-bottom: 18px;
         }
 
-        .main-title span {
-            color: var(--primary-red);
-        }
+        .main-title span { color: var(--primary-red); }
 
         .description-text {
             font-size: 16px;
@@ -257,11 +249,7 @@
             margin-bottom: 6px;
         }
 
-        .info-value {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
+        .info-value { font-size: 15px; font-weight: 700; color: var(--text-dark); }
 
         .btn-primary {
             display: inline-flex;
@@ -301,23 +289,11 @@
             color: var(--primary-red);
         }
 
-        .btn-outline:hover {
-            background: var(--light-red-bg);
-        }
+        .btn-outline:hover { background: var(--light-red-bg); }
 
         /* ================= 3. FORM RSVP ================= */
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 8px;
-        }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-label { display: block; font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; }
 
         .form-input {
             width: 100%;
@@ -336,11 +312,7 @@
             box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
         }
 
-        .radio-group {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
+        .radio-group { display: flex; gap: 12px; flex-wrap: wrap; }
 
         .radio-card {
             flex: 1;
@@ -398,7 +370,7 @@
         }
 
         .admin-header {
-            max-width: 900px;
+            max-width: 950px; /* Tăng rộng chút cho bảng hiển thị đẹp */
             margin: 0 auto 20px;
             display: flex;
             justify-content: space-between;
@@ -410,7 +382,7 @@
         }
 
         .admin-content {
-            max-width: 900px;
+            max-width: 950px;
             margin: 0 auto;
             background: #FFFFFF;
             padding: 24px;
@@ -467,6 +439,28 @@
         th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #E2E8F0; font-size: 14px; }
         th { font-weight: 700; color: var(--text-muted); background: #F8FAFC; }
 
+        /* Nút xóa trong bảng */
+        .btn-delete {
+            background: #FEE2E2;
+            color: #DC2626;
+            border: 1px solid #FCA5A5;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-delete:hover {
+            background: #DC2626;
+            color: #FFFFFF;
+            border-color: #DC2626;
+            transform: scale(1.05);
+        }
+
         /* Floating particles */
         .math-particle {
             position: fixed;
@@ -508,7 +502,7 @@
         <div class="click-hint">Chạm vào phong bì để mở thiệp mời ✉️</div>
     </div>
 
-    <!-- NỘI DUNG CHÍNH CỦA THIỆP -->
+    <!-- MAIN CONTAINER -->
     <div class="container" id="mainContainer">
         
         <div class="glass-card" style="text-align: center;">
@@ -544,7 +538,7 @@
             </a>
         </div>
 
-        <!-- FORM XÁC NHẬN PARTICIPATION -->
+        <!-- FORM RSVP -->
         <div class="glass-card">
             <h2 style="font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 22px; color: var(--text-dark);">
                 Xác Nhận Tham Dự (RSVP)
@@ -588,7 +582,7 @@
             </form>
         </div>
 
-        <!-- QUẢN TRỊ VIÊN LINK -->
+        <!-- ADMIN LINK -->
         <div style="text-align: center; margin-top: 25px;">
             <button onclick="openAdminModal()" style="background: none; border: none; color: #94A3B8; font-size: 13px; cursor: pointer; text-decoration: underline;">
                 🔐 Quản trị viên (Admin)
@@ -596,7 +590,7 @@
         </div>
     </div>
 
-    <!-- MODAL ĐĂNG NHẬP ADMIN -->
+    <!-- MODAL ADMIN LOGIN -->
     <div id="adminModal" class="admin-modal">
         <div class="admin-box">
             <h3 style="margin-bottom: 18px; font-size: 20px; color: var(--text-dark);">Đăng Nhập Quản Trị</h3>
@@ -607,7 +601,7 @@
         </div>
     </div>
 
-    <!-- BẢNG ADMIN PANEL -->
+    <!-- ADMIN PANEL -->
     <div id="adminPanel" class="admin-panel">
         <div class="admin-header">
             <h2 style="font-size: 20px; font-weight: 800; color: var(--text-dark);">Quản Lý Danh Sách RSVP</h2>
@@ -630,10 +624,10 @@
                 </div>
             </div>
 
-            <!-- THANH TÌM KIẾM TÊN TỨC THÌ -->
-            <div class="search-container">
-                <input type="text" id="search-input" class="search-input" placeholder="🔍 Tìm kiếm tên người phản hồi..." oninput="filterRSVPData()">
-                <button onclick="fetchRSVPData()" class="btn-primary" style="width: auto; padding: 11px 20px; font-size: 13px; white-space: nowrap;">🔄 Làm Mới Dữ Liệu</button>
+            <!-- TÌM KIẾM TÊN TỚI THỜI GIAN THỰC -->
+            <div style="margin-bottom: 18px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" id="search-input" class="form-input" placeholder="🔍 Tìm kiếm theo tên người phản hồi..." oninput="filterTableByName()" style="flex: 1; min-width: 220px;">
+                <button onclick="fetchRSVPData()" class="btn-primary" style="width: auto; padding: 12px 20px; font-size: 14px; white-space: nowrap;">🔄 Làm Mới</button>
             </div>
 
             <div style="overflow-x: auto;">
@@ -645,10 +639,11 @@
                             <th>Trạng Thái</th>
                             <th>Đi Cùng</th>
                             <th>Lời Nhắn</th>
+                            <th style="text-align: center;">Thao Tác</th> <!-- Cột mới thêm -->
                         </tr>
                     </thead>
                     <tbody id="rsvp-table-body">
-                        <!-- Content dynamically loaded -->
+                        <!-- Transformed via JS -->
                     </tbody>
                 </table>
             </div>
@@ -662,7 +657,7 @@
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndlZXFwbGVqcXFkcGpqZGd1eXN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MDMyNTEsImV4cCI6MjEwODA3OTI1MX0.mOklk9JEb-Hp5kN9Kx-ucGuJ-LyLDPtOCLS3u2AJIok";
 
         let isOpened = false;
-        let rsvpCacheData = []; // Cache list for real-time name searching
+        let globalRSVPData = []; // Lưu bộ dữ liệu để phục vụ tìm kiếm
 
         /* ================= 1. MỞ PHONG BÌ 3D ================= */
         function handleOpenEnvelope(e) {
@@ -672,7 +667,6 @@
             const wrapper = document.getElementById('envelopeWrapper');
             wrapper.classList.add('open');
 
-            // Spawn particles
             for (let i = 0; i < 20; i++) {
                 setTimeout(() => spawnParticle(window.innerWidth / 2, window.innerHeight / 2), i * 35);
             }
@@ -689,13 +683,11 @@
             }, 650);
         }
 
-        /* ================= 2. HIỆU ỨNG TẠO HẠT TOÁN HỌC ================= */
+        /* ================= 2. HIỆU ỨNG HẠT TOÁN HỌC ================= */
         const mathSymbols = ['π', '√x', '∫', 'Σ', '∞', 'lim', 'α', 'β', 'f(x)'];
         
         document.addEventListener('click', (e) => {
-            if (isOpened) {
-                spawnParticle(e.clientX, e.clientY);
-            }
+            if (isOpened) spawnParticle(e.clientX, e.clientY);
         });
 
         function spawnParticle(x, y) {
@@ -715,7 +707,7 @@
             setTimeout(() => p.remove(), 1200);
         }
 
-        /* ================= 3. SUBMIT FORM & CHỐNG SPAM (60 GIÂY) ================= */
+        /* ================= 3. SUBMIT FORM & CHỐNG SPAM (60s) ================= */
         document.querySelectorAll('input[name="status"]').forEach(r => {
             r.addEventListener('change', (e) => {
                 document.getElementById('guests-field').style.display = e.target.value.includes('vắng') ? 'none' : 'block';
@@ -725,7 +717,6 @@
         async function handleFormSubmit(e) {
             e.preventDefault();
 
-            // Anti-Spam mechanism (60s)
             const COOLDOWN_MS = 60000;
             const lastSubmitTs = localStorage.getItem('last_rsvp_ts');
             if (lastSubmitTs && (Date.now() - parseInt(lastSubmitTs)) < COOLDOWN_MS) {
@@ -787,7 +778,7 @@
             fb.innerText = text;
         }
 
-        /* ================= 4. ADMIN DASHBOARD & SEARCH ================= */
+        /* ================= 4. ADMIN DASHBOARD ================= */
         function openAdminModal() {
             document.getElementById('adminModal').style.display = 'flex';
         }
@@ -815,9 +806,10 @@
 
         async function fetchRSVPData() {
             const tbody = document.getElementById('rsvp-table-body');
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Đang tải...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Đang tải dữ liệu...</td></tr>';
 
             try {
+                // Lấy toàn bộ dữ liệu bao gồm cả cột 'id' để phục vụ việc XÓA
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/rsvps?select=*&order=created_at.desc`, {
                     method: 'GET',
                     headers: {
@@ -832,66 +824,102 @@
                     throw new Error(`HTTP ${response.status}: ${errBody}`);
                 }
 
-                rsvpCacheData = await response.json();
+                globalRSVPData = await response.json();
                 
-                // Update Statistics
+                // Thống kê tổng quan
                 let attend = 0, guests = 0, absent = 0;
-                if (Array.isArray(rsvpCacheData)) {
-                    rsvpCacheData.forEach(item => {
-                        const isYes = item.status && item.status.includes('Có');
-                        if (isYes) { attend++; guests += (parseInt(item.guests) || 0); }
-                        else absent++;
-                    });
-                }
+                globalRSVPData.forEach(item => {
+                    const isYes = item.status && item.status.includes('Có');
+                    if (isYes) { attend++; guests += (parseInt(item.guests) || 0); }
+                    else absent++;
+                });
 
                 document.getElementById('stat-attending').innerText = attend;
                 document.getElementById('stat-guests').innerText = guests;
                 document.getElementById('stat-absent').innerText = absent;
 
-                // Render with current search filter
-                filterRSVPData();
+                // Render dữ liệu bảng với trạng thái Search hiện tại
+                filterTableByName();
 
             } catch(e) {
                 console.error("Lỗi fetch:", e);
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red; font-weight:bold;">Không thể tải dữ liệu: ${e.message}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; font-weight:bold;">Không thể tải dữ liệu: ${e.message}</td></tr>`;
             }
         }
 
-        /* SEARCH FILTER LOGIC */
-        function filterRSVPData() {
-            const query = (document.getElementById('search-input').value || '').toLowerCase().trim();
+        function renderTableData(dataList) {
             const tbody = document.getElementById('rsvp-table-body');
             tbody.innerHTML = '';
 
-            if (!Array.isArray(rsvpCacheData) || rsvpCacheData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Chưa có phản hồi nào.</td></tr>';
+            if (!Array.isArray(dataList) || dataList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Không tìm thấy dữ liệu phù hợp.</td></tr>';
                 return;
             }
 
-            const filtered = rsvpCacheData.filter(item => 
-                (item.name || '').toLowerCase().includes(query)
-            );
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#64748B;">Không tìm thấy người nào có tên "${escapeHtml(query)}"</td></tr>`;
-                return;
-            }
-
-            filtered.forEach(item => {
+            dataList.forEach(item => {
                 const isYes = item.status && item.status.includes('Có');
                 const d = new Date(item.created_at || Date.now());
                 const timeStr = `${d.getDate()}/${d.getMonth()+1} ${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`;
+                const safeName = escapeHtml(item.name || '-');
 
                 tbody.innerHTML += `
                     <tr>
                         <td style="color:#64748B; font-size:12px;">${timeStr}</td>
-                        <td style="font-weight:700;">${escapeHtml(item.name || '-')}</td>
+                        <td style="font-weight:700;">${safeName}</td>
                         <td><span style="padding:4px 8px; border-radius:6px; font-weight:700; font-size:12px; background:${isYes ? '#DEF7EC' : '#FDE8E8'}; color:${isYes ? '#03543F' : '#9B1C1C'}">${escapeHtml(item.status || '-')}</span></td>
                         <td style="text-align:center;">${item.guests || 0}</td>
                         <td>${escapeHtml(item.message || '-')}</td>
+                        <td style="text-align:center;">
+                            <button class="btn-delete" onclick="deleteRSVP('${item.id}', '${safeName}')" title="Xóa phản hồi này">🗑️</button>
+                        </td>
                     </tr>
                 `;
             });
+        }
+
+        /* TÌM KIẾM TÊN */
+        function filterTableByName() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            if (!query) {
+                renderTableData(globalRSVPData);
+                return;
+            }
+            const filtered = globalRSVPData.filter(item => 
+                (item.name || '').toLowerCase().includes(query)
+            );
+            renderTableData(filtered);
+        }
+
+        /* ================= 5. HÀM XÓA PHẢN HỒI (DELETE) ================= */
+        async function deleteRSVP(id, name) {
+            // Popup cảnh báo xác nhận trước khi xóa
+            const confirmDelete = window.confirm(`CẢNH BÁO!\nBạn có chắc chắn muốn XÓA vĩnh viễn phản hồi của "${name}" không?\n\nHành động này không thể hoàn tác!`);
+            
+            if (!confirmDelete) return; // Nếu chọn Cancel thì dừng lại
+
+            try {
+                // Gửi lệnh DELETE tới Supabase (dựa vào ID)
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/rsvps?id=eq.${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(`Mã lỗi ${response.status}: ${errText}`);
+                }
+
+                // Nếu xóa thành công, tiến hành Tải lại toàn bộ dữ liệu bảng & thống kê
+                alert(`✓ Đã xóa thành công phản hồi của "${name}".`);
+                fetchRSVPData();
+
+            } catch (err) {
+                console.error("Lỗi xóa:", err);
+                alert(`❌ Đã xảy ra lỗi khi xóa: ${err.message}`);
+            }
         }
 
         function escapeHtml(str) {
