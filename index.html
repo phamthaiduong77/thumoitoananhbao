@@ -1,807 +1,852 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Gặp Mặt Lớp Toán Anh Bảo</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Thư viện Supabase JS -->
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase JS Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        crimson: {
+                            50: '#fef2f2',
+                            100: '#ffe1e1',
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            700: '#b91c1c',
+                            800: '#991b1b',
+                            900: '#7f1d1d',
+                            950: '#450a0a',
+                        },
+                        gold: {
+                            300: '#fde047',
+                            400: '#facc15',
+                            500: '#eab308',
+                            600: '#d97706',
+                            700: '#b45309',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        heading: ['Montserrat', 'sans-serif'],
+                        body: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        /* ================= VARIABLES ================= */
-        :root {
-            --primary-crimson: #990000;
-            --dark-crimson: #730000;
-            --gold: #D4AF37;
-            --gold-light: #F3E5AB;
-            --bg-color: #F8F9FA;
-            --text-dark: #1F2937;
-            --text-gray: #4B5563;
-            --card-bg: #FFFFFF;
+        /* Custom Ambient Background Grid */
+        .grid-bg {
+            background-color: #faf9f6;
+            background-image: 
+                radial-gradient(rgba(220, 38, 38, 0.08) 1.5px, transparent 1.5px),
+                radial-gradient(rgba(217, 119, 6, 0.08) 1.5px, transparent 1.5px);
+            background-size: 28px 28px;
+            background-position: 0 0, 14px 14px;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+        /* Glassmorphism Styles (Bright Pearl White with Subtle Crimson Border) */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(220, 38, 38, 0.16);
+            box-shadow: 0 20px 40px -15px rgba(220, 38, 38, 0.08), 0 0 1px 1px rgba(255, 255, 255, 0.9) inset;
         }
 
-        body {
-            background-color: var(--bg-color);
-            background-image: radial-gradient(var(--gold-light) 1px, transparent 1px);
-            background-size: 40px 40px;
-            color: var(--text-dark);
-            overflow-x: hidden;
-            position: relative;
+        .glass-card-hover {
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-card-hover:hover {
+            background: rgba(255, 255, 255, 0.92);
+            border-color: rgba(220, 38, 38, 0.35);
+            transform: translateY(-4px);
+            box-shadow: 0 25px 50px -12px rgba(220, 38, 38, 0.18), 0 0 1px 1px rgba(255, 255, 255, 1) inset;
         }
 
-        /* ================= ENVELOPE (PHONG BÌ MỞ THƯ) ================= */
-        #envelope-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(31, 41, 55, 0.95);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 1s ease-out;
-            cursor: pointer;
+        .glass-input {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1.5px solid #e2e8f0;
+            color: #0f172a;
+            transition: all 0.25s ease;
+        }
+        .glass-input:focus {
+            background: #ffffff;
+            border-color: #dc2626;
+            box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12);
+            outline: none;
         }
 
-        .envelope {
-            position: relative;
-            width: 90%;
-            max-width: 500px;
-            height: 300px;
-            background-color: var(--dark-crimson);
-            border-radius: 8px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        /* 3D Envelope Animation */
+        .envelope-perspective {
             perspective: 1000px;
-            transition: transform 0.3s;
-        }
-
-        .envelope:hover {
-            transform: scale(1.02);
         }
 
         .envelope-flap {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--primary-crimson) 50%, transparent 50%);
-            border-radius: 8px;
-            transform-origin: top;
-            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 2;
+            transform-origin: top center;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
         }
 
-        .envelope-flap-right {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(-135deg, var(--dark-crimson) 50%, transparent 50%);
-            border-radius: 8px;
-            z-index: 1;
+        .envelope-open .envelope-flap {
+            transform: rotateX(180deg);
         }
 
-        .envelope-bottom {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to top, var(--primary-crimson) 50%, transparent 50%);
-            border-radius: 8px;
-            z-index: 3;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            padding-bottom: 20px;
+        /* Wax Seal Pulse Animation */
+        @keyframes sealGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(217, 119, 6, 0.5), 0 8px 20px rgba(0,0,0,0.4); }
+            50% { box-shadow: 0 0 35px rgba(250, 204, 21, 0.9), 0 12px 25px rgba(0,0,0,0.5); }
         }
 
         .wax-seal {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 60px;
-            height: 60px;
-            background: radial-gradient(circle at 30% 30%, #FFDF73, var(--gold), #997A00);
-            border-radius: 50%;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5), inset 0 -2px 5px rgba(0,0,0,0.3);
-            z-index: 4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Montserrat', serif;
-            font-weight: bold;
-            font-size: 24px;
-            color: var(--primary-crimson);
-            text-shadow: 1px 1px 0px rgba(255,255,255,0.4);
-            cursor: pointer;
-            transition: box-shadow 0.3s;
+            animation: sealGlow 2.5s infinite ease-in-out;
+            background: radial-gradient(circle at 35% 35%, #fef08a, #d97706 60%, #78350f);
         }
 
-        .envelope:hover .wax-seal {
-            box-shadow: 0 0 20px var(--gold);
-        }
-
-        .click-hint {
-            position: absolute;
-            bottom: -40px;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            color: white;
-            font-size: 14px;
-            opacity: 0.8;
-            animation: pulse 2s infinite;
-        }
-
-        /* Animation classes */
-        .open-flap .envelope-flap {
-            transform: rotateX(180deg);
-            z-index: 0;
-        }
-        .open-flap .wax-seal {
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-
-        /* ================= MAIN CONTENT (BỨC THƯ) ================= */
-        .container {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 20px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 1s, transform 1s;
-        }
-
-        .letter-card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            padding: 50px 30px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 30px;
-        }
-
-        /* Math Grid Background on Letter */
-        .letter-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image: 
-                linear-gradient(rgba(153, 0, 0, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(153, 0, 0, 0.03) 1px, transparent 1px);
-            background-size: 20px 20px;
-            z-index: 0;
-        }
-
-        .letter-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .logo-math {
-            font-size: 32px;
-            color: var(--primary-crimson);
-            margin-bottom: 20px;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: bold;
-        }
-
-        .sub-title {
-            text-transform: uppercase;
-            font-size: 12px;
-            letter-spacing: 2px;
-            color: var(--text-gray);
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .main-title {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 38px;
-            font-weight: 800;
-            color: var(--text-dark);
-            line-height: 1.2;
-            margin-bottom: 25px;
-        }
-
-        .main-title span {
-            color: var(--primary-crimson);
-        }
-
-        .description {
-            font-size: 16px;
-            color: var(--text-gray);
-            line-height: 1.6;
-            max-width: 600px;
-            margin: 0 auto 30px;
-        }
-
-        .math-badges {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 40px;
-            flex-wrap: wrap;
-        }
-
-        .badge {
-            background-color: rgba(153, 0, 0, 0.05);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            color: var(--primary-crimson);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .badge .sym { font-family: 'Georgia', serif; font-size: 18px; font-style: italic; }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            text-align: left;
-            background: #FAFAFA;
-            padding: 20px;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary-crimson);
-            margin-bottom: 30px;
-        }
-
-        .info-item { display: flex; flex-direction: column; }
-        .info-label { font-size: 12px; color: var(--text-gray); text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
-        .info-value { font-size: 16px; font-weight: 600; color: var(--text-dark); }
-
-        .btn {
-            display: inline-block;
-            background-color: var(--primary-crimson);
-            color: white;
-            padding: 14px 28px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 16px;
-        }
-        .btn:hover { background-color: var(--dark-crimson); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(153,0,0,0.3); }
-        .btn:disabled { background-color: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
-        
-        .btn-outline {
-            background-color: transparent;
-            color: var(--primary-crimson);
-            border: 2px solid var(--primary-crimson);
-        }
-        .btn-outline:hover { background-color: var(--primary-crimson); color: white; }
-
-        /* ================= RSVP FORM ================= */
-        .rsvp-section {
-            background: white;
-            padding: 40px 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            margin-bottom: 40px;
-        }
-
-        .rsvp-title {
-            text-align: center;
-            font-size: 24px;
-            color: var(--text-dark);
-            margin-bottom: 25px;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: bold;
-        }
-
-        .form-group { margin-bottom: 20px; }
-        .form-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--text-dark); }
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #E5E7EB;
-            border-radius: 8px;
-            font-size: 15px;
-            transition: border-color 0.2s;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-        .form-control:focus { outline: none; border-color: var(--primary-crimson); }
-        
-        .radio-group { display: flex; gap: 20px; }
-        .radio-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 15px; }
-        
-        /* ================= ADMIN BUTTON ================= */
-        .admin-trigger {
-            text-align: center;
-            margin-top: 50px;
-            padding-bottom: 20px;
-        }
-        .admin-trigger button {
-            background: none;
-            border: none;
-            color: #9CA3AF;
-            font-size: 12px;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-        /* ================= MODAL ADMIN ================= */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-        }
-        .admin-dashboard {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-color);
-            z-index: 1001;
-            overflow-y: auto;
-            padding: 20px;
-        }
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        .stat-num { font-size: 32px; font-weight: bold; color: var(--primary-crimson); }
-        .data-table-wrapper {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            overflow-x: auto;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #E5E7EB; }
-        th { font-weight: 600; color: var(--text-gray); font-size: 14px; text-transform: uppercase; }
-
-        /* PARTICLES */
-        .particle {
+        /* Interactive Floating Particles */
+        .math-particle {
             position: fixed;
             pointer-events: none;
-            color: var(--primary-crimson);
-            font-family: 'Georgia', serif;
-            font-weight: bold;
-            animation: floatUp 1s ease-out forwards;
-            z-index: 999;
+            font-family: 'Montserrat', 'Georgia', serif;
+            font-weight: 800;
+            color: #dc2626;
+            z-index: 99999;
+            text-shadow: 0 0 10px rgba(220, 38, 38, 0.4);
+            animation: particleFloatUp 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
         }
 
-        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(0.5); opacity: 1; }
-            100% { transform: translateY(-50px) scale(1.5); opacity: 0; }
+        @keyframes particleFloatUp {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(0.7) translateY(0) rotate(0deg); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5) translateY(-80px) rotate(25deg); }
         }
 
-        @media (max-width: 600px) {
-            .info-grid { grid-template-columns: 1fr; }
-            .main-title { font-size: 28px; }
-            .envelope { height: 200px; }
+        /* Text Shimmer */
+        .text-crimson-gradient {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #991b1b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
     </style>
 </head>
-<body>
+<body class="grid-bg text-slate-800 font-body min-h-screen relative overflow-x-hidden select-none">
 
-    <!-- PHONG BÌ MỞ THƯ -->
-    <div id="envelope-overlay" onclick="openEnvelope()">
-        <div class="envelope" id="envelope">
-            <div class="envelope-flap"></div>
-            <div class="envelope-flap-right"></div>
-            <div class="envelope-bottom">
-                <div style="color: rgba(255,255,255,0.2); font-size: 10px; font-family: monospace; padding-bottom: 10px;">y = f(x)</div>
-            </div>
-            <div class="wax-seal">√x</div>
-        </div>
-        <div class="click-hint">Chạm để mở thiệp & kích hoạt hiệu ứng</div>
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-6 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-2xl shadow-2xl z-[10000] opacity-0 pointer-events-none transition-all duration-300 font-sans font-semibold text-sm text-center min-w-[280px] backdrop-blur-xl border">
     </div>
 
-    <!-- NỘI DUNG CHÍNH -->
-    <div class="container" id="main-content">
-        <!-- Bức Thư -->
-        <div class="letter-card">
-            <div class="letter-content">
-                <div class="logo-math">∫ Σ √</div>
-                <div class="sub-title">Hội ngộ tập thể lớp</div>
-                <h1 class="main-title">GẶP MẶT LỚP TOÁN<br><span>ANH BẢO</span></h1>
-                <p class="description">
+    <!-- 1. ENVELOPE OVERLAY (RED CRIMSON 3D ENVELOPE) -->
+    <div id="envelopeOverlay" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 transition-all duration-700 ease-in-out cursor-pointer" onclick="openEnvelope()">
+        
+        <div id="envelopeWrapper" class="envelope-perspective relative w-full max-w-md aspect-[4/3] rounded-3xl shadow-[0_30px_90px_rgba(185,28,28,0.45)] flex flex-col items-center justify-center transition-transform duration-300 hover:scale-[1.02]">
+            
+            <!-- Envelope Outer Body -->
+            <div class="absolute inset-0 bg-gradient-to-br from-crimson-600 via-crimson-800 to-crimson-950 rounded-3xl overflow-hidden border border-amber-400/30 shadow-2xl">
+                <!-- Subtle Math Geometry Patterns -->
+                <svg class="absolute inset-0 w-full h-full opacity-15 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="0" y1="0" x2="100%" y2="100%" stroke="#FFF" stroke-width="1.5" stroke-dasharray="6 6"/>
+                    <line x1="100%" y1="0" x2="0" y2="100%" stroke="#FFF" stroke-width="1.5" stroke-dasharray="6 6"/>
+                    <circle cx="50%" cy="50%" r="22%" stroke="#FACC15" stroke-width="1.5" fill="none"/>
+                </svg>
+            </div>
+
+            <!-- Envelope Top Flap (3D Flip) -->
+            <div id="envelopeFlap" class="envelope-flap absolute top-0 left-0 w-full h-[62%] z-20 drop-shadow-[0_15px_25px_rgba(0,0,0,0.5)]">
+                <svg viewBox="0 0 100 62" preserveAspectRatio="none" class="w-full h-full">
+                    <path d="M0,0 L100,0 L50,62 Z" fill="#DC2626" stroke="#991B1B" stroke-width="0.5"/>
+                </svg>
+                
+                <!-- Center Glowing Wax Seal (\sqrt{x}) -->
+                <div class="absolute left-1/2 bottom-0 transform -translate-x-1/2 translate-y-1/2 wax-seal w-20 h-20 rounded-full flex items-center justify-center border-2 border-amber-200 shadow-2xl z-30 transition-transform hover:scale-110 active:scale-95">
+                    <div class="w-14 h-14 rounded-full border border-amber-900/30 flex items-center justify-center bg-amber-500/10 backdrop-blur-xs">
+                        <span class="text-2xl font-black text-amber-950 font-serif drop-shadow-sm">&radic;x</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inner Flap Gradient Layer -->
+            <div class="absolute inset-0 bg-gradient-to-t from-crimson-900/90 via-transparent to-transparent z-10 pointer-events-none rounded-3xl"></div>
+        </div>
+
+        <div class="mt-10 text-center">
+            <p class="text-white font-semibold text-sm sm:text-base tracking-wide flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md animate-bounce shadow-xl">
+                <span>✉️</span> Chạm bất kỳ đâu để mở thiệp mời
+            </p>
+        </div>
+    </div>
+
+    <!-- 2. MAIN INVITATION CONTENT (GLASSMORPHISM) -->
+    <main id="mainContent" class="relative z-10 flex flex-col items-center justify-center p-4 sm:p-6 sm:py-12 min-h-screen opacity-0 translate-y-10 transition-all duration-1000 ease-out hidden">
+        
+        <div class="w-full max-w-2xl space-y-8 my-4">
+            
+            <!-- Hero Letter Card -->
+            <div class="glass-card rounded-3xl p-6 sm:p-12 text-center relative overflow-hidden border-t-4 border-t-crimson-600">
+                <!-- Background Ambient Glows -->
+                <div class="absolute -top-20 -left-20 w-56 h-56 bg-crimson-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-20 -right-20 w-56 h-56 bg-gold-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+                <!-- Math Logo Symbol Badge -->
+                <div class="inline-flex items-center justify-center gap-3 px-6 py-2 rounded-full bg-crimson-50 border border-crimson-200/60 mb-6 text-crimson-700 font-serif font-extrabold text-lg shadow-sm">
+                    <span>&int;</span>
+                    <span class="text-slate-300">•</span>
+                    <span>&Sigma;</span>
+                    <span class="text-slate-300">•</span>
+                    <span>&radic;x</span>
+                </div>
+
+                <p class="text-xs sm:text-sm font-extrabold uppercase tracking-[0.3em] text-crimson-600 mb-3">Hội Ngộ Tập Thể Lớp</p>
+
+                <!-- Dynamic Title -->
+                <h1 id="displayTitle" class="text-3xl sm:text-4xl md:text-5xl font-heading font-black tracking-tight leading-tight mb-6 text-slate-900">
+                    GẶP MẶT LỚP TOÁN<br/>
+                    <span class="text-crimson-gradient">ANH BẢO</span>
+                </h1>
+
+                <!-- Dynamic Description -->
+                <p id="displayDesc" class="text-slate-600 font-normal text-sm sm:text-base md:text-lg leading-relaxed max-w-lg mx-auto mb-8">
                     Trân trọng kính mời các bạn học sinh tới tham dự buổi họp mặt ấm cúng, tri ân Thầy và cùng nhau ôn lại những kỉ niệm rực rỡ nhất dưới mái trường!
                 </p>
 
-                <div class="math-badges">
-                    <div class="badge"><span class="sym">∫</span> Kỷ niệm = ∞</div>
-                    <div class="badge"><span class="sym">Σ</span> Bạn bè = Niềm vui</div>
+                <!-- Math Badges -->
+                <div class="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 mb-2">
+                    <div class="bg-white border border-crimson-200/80 px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold text-crimson-800 shadow-sm flex items-center gap-2">
+                        <span class="text-gold-600 font-serif text-base">&int;</span>
+                        <span>Kỷ niệm = &infin;</span>
+                    </div>
+                    <div class="bg-white border border-crimson-200/80 px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold text-crimson-800 shadow-sm flex items-center gap-2">
+                        <span class="text-gold-600 font-serif text-base">&Sigma;</span>
+                        <span>Bạn bè = Niềm vui</span>
+                    </div>
+                    <div class="bg-white border border-crimson-200/80 px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold text-crimson-800 shadow-sm flex items-center gap-2">
+                        <span class="text-gold-600 font-serif text-base">lim</span>
+                        <span>Tình cảm &rarr; &infin;</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Event Details Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <!-- Time Box -->
+                <div class="glass-card glass-card-hover rounded-3xl p-6 text-center flex flex-col items-center justify-center">
+                    <div class="p-3.5 rounded-2xl bg-crimson-50 text-crimson-600 mb-3 border border-crimson-100">
+                        <i data-lucide="clock" class="w-6 h-6"></i>
+                    </div>
+                    <p class="text-[11px] font-extrabold uppercase tracking-widest text-slate-400 mb-1">Thời Gian</p>
+                    <p id="displayTime" class="text-lg sm:text-xl font-heading font-black text-slate-900">17h00 • Ngày 25/10/2026</p>
                 </div>
 
-                <div class="info-grid">
-                    <div class="info-item">
-                        <span class="info-label">Thời gian</span>
-                        <span class="info-value">17h00 • Ngày 25/10/2026</span>
+                <!-- Location Box -->
+                <div class="glass-card glass-card-hover rounded-3xl p-6 text-center flex flex-col items-center justify-center">
+                    <div class="p-3.5 rounded-2xl bg-crimson-50 text-crimson-600 mb-3 border border-crimson-100">
+                        <i data-lucide="map-pin" class="w-6 h-6"></i>
                     </div>
-                    <div class="info-item">
-                        <span class="info-label">Địa điểm</span>
-                        <span class="info-value">Nhà hàng Ngọc Lặc Event<br><span style="font-size: 14px; font-weight: normal; color: #666;">Ngọc Lặc, Thanh Hóa</span></span>
-                    </div>
+                    <p class="text-[11px] font-extrabold uppercase tracking-widest text-slate-400 mb-1">Địa Điểm</p>
+                    <p id="displayLocation" class="text-base sm:text-lg font-heading font-bold text-slate-900">Nhà hàng Ngọc Lặc Event, Ngọc Lặc, Thanh Hóa</p>
                 </div>
+            </div>
 
-                <a href="https://www.google.com/maps/place/Nh%C3%A0+H%C3%A0ng+Ng%E1%BB%8Dc+L%E1%BA%B7c/@20.0919115,105.3719699,788m/data=!3m2!1e3!4b1!4m6!3m5!1s0x3136f960b71070db:0x139d7cd02525b3d1!8m2!3d20.0919065!4d105.3745502!16s%2Fg%2F11m6yg25hc" target="_blank" class="btn btn-outline" style="margin-top: 10px;">
-                    📍 Chỉ đường Google Maps
+            <!-- Google Maps Direct Button -->
+            <div class="text-center">
+                <a id="displayMapLink" 
+                   href="https://www.google.com/maps/place/Nh%C3%A0+H%C3%A0ng+Ng%E1%BB%8Dc+L%E1%BA%B7c/@20.0919115,105.3719699,788m/data=!3m2!1e3!4b1!4m6!3m5!1s0x3136f960b71070db:0x139d7cd02525b3d1!8m2!3d20.0919065!4d105.3745502!16s%2Fg%2F11m6yg25hc" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   class="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-crimson-600 to-crimson-800 hover:from-crimson-700 hover:to-crimson-900 text-white font-sans font-bold text-sm sm:text-base px-8 py-4 rounded-2xl shadow-[0_10px_25px_rgba(220,38,38,0.35)] transition-all transform hover:-translate-y-0.5 active:translate-y-0 w-full sm:w-auto border border-crimson-500/30">
+                    <i data-lucide="navigation" class="w-5 h-5"></i>
+                    <span>Mở Bản Đồ Chỉ Đường (Google Maps)</span>
                 </a>
             </div>
-        </div>
 
-        <!-- Form RSVP -->
-        <div class="rsvp-section" id="rsvp">
-            <h2 class="rsvp-title">Xác Nhận Tham Dự</h2>
-            <form id="rsvpForm" onsubmit="submitRSVP(event)">
-                <div class="form-group">
-                    <label class="form-label">Họ và Tên của bạn *</label>
-                    <input type="text" id="name" class="form-control" required placeholder="Nhập tên của bạn...">
+            <!-- RSVP Form Section -->
+            <div class="glass-card rounded-3xl p-6 sm:p-10 border border-crimson-100">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl sm:text-3xl font-heading font-extrabold text-slate-900 mb-2">Xác Nhận Tham Dự</h2>
+                    <p class="text-xs sm:text-sm text-slate-500 font-medium">Vui lòng phản hồi trước để Lớp chuẩn bị chu đáo nhất</p>
                 </div>
+
+                <form id="rsvpForm" onsubmit="handleRSVPSubmit(event)" class="space-y-5 max-w-md mx-auto">
+                    <!-- Full Name -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Họ và Tên của bạn <span class="text-crimson-600">*</span></label>
+                        <input type="text" id="guestName" required placeholder="Nhập họ và tên..." class="glass-input w-full px-4 py-3.5 rounded-2xl text-sm font-semibold placeholder:text-slate-400" />
+                    </div>
+
+                    <!-- Attendance Status -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Trạng thái tham dự <span class="text-crimson-600">*</span></label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="bg-white p-3.5 rounded-2xl cursor-pointer border border-slate-200 flex items-center justify-center gap-2 hover:border-crimson-500 transition-all [&:has(input:checked)]:border-crimson-600 [&:has(input:checked)]:bg-crimson-50/60 [&:has(input:checked)]:text-crimson-700">
+                                <input type="radio" name="attendance" value="Tham gia" checked class="accent-crimson-600 w-4 h-4">
+                                <span class="text-xs sm:text-sm font-bold">Sẽ tham gia</span>
+                            </label>
+                            <label class="bg-white p-3.5 rounded-2xl cursor-pointer border border-slate-200 flex items-center justify-center gap-2 hover:border-slate-400 transition-all [&:has(input:checked)]:border-slate-500 [&:has(input:checked)]:bg-slate-100 [&:has(input:checked)]:text-slate-700">
+                                <input type="radio" name="attendance" value="Vắng mặt" class="accent-slate-500 w-4 h-4">
+                                <span class="text-xs sm:text-sm font-bold text-slate-600">Vắng mặt</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Guest Count -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Số người đi cùng (vợ/chồng/con...)</label>
+                        <input type="number" id="guestCount" min="0" value="0" class="glass-input w-full px-4 py-3.5 rounded-2xl text-sm font-semibold" />
+                    </div>
+
+                    <!-- Message -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Lời nhắn gửi tới lớp hoặc Thầy</label>
+                        <textarea id="guestNote" rows="3" placeholder="Gửi lời nhắn..." class="glass-input w-full px-4 py-3.5 rounded-2xl text-sm font-semibold placeholder:text-slate-400"></textarea>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="rsvpSubmitBtn" class="w-full bg-gradient-to-r from-crimson-600 to-crimson-800 hover:from-crimson-700 hover:to-crimson-900 text-white font-sans font-bold py-4 rounded-2xl shadow-[0_10px_25px_rgba(220,38,38,0.3)] transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
+                        <i data-lucide="send" class="w-5 h-5"></i>
+                        <span>Gửi Phản Hồi</span>
+                    </button>
+                </form>
+
+                <!-- Success State -->
+                <div id="rsvpSuccessMsg" class="hidden max-w-md mx-auto text-center space-y-4 py-6">
+                    <div class="w-16 h-16 bg-emerald-100 border border-emerald-300 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-sm">
+                        <i data-lucide="check" class="w-8 h-8"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-heading font-extrabold text-slate-900 mb-1">Xác Nhận Thành Công!</h3>
+                        <p class="text-sm text-slate-600">Phản hồi của bạn đã được ghi nhận. Cảm ơn bạn rất nhiều!</p>
+                    </div>
+                    <button onclick="resetRSVPForm()" class="text-xs font-bold text-crimson-600 hover:text-crimson-800 underline py-2 block mx-auto transition-colors">
+                        Gửi lại phản hồi khác
+                    </button>
+                </div>
+            </div>
+
+            <!-- Footer & Admin Entry -->
+            <footer class="flex justify-between items-center px-4 py-2 text-slate-400 text-xs font-medium">
+                <span>&copy; 2026 Lớp Toán Anh Bảo</span>
+                <button onclick="openAdminModal()" class="hover:text-crimson-600 flex items-center gap-1.5 transition-colors">
+                    <i data-lucide="shield-lock" class="w-3.5 h-3.5"></i> Admin
+                </button>
+            </footer>
+        </div>
+    </main>
+
+    <!-- 3. ADMIN MODAL & PANEL -->
+    <div id="adminModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300 bg-slate-950/70 backdrop-blur-md">
+        <div class="bg-white w-full max-w-3xl max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-slate-200 transform scale-95 transition-transform duration-300" id="adminModalBox">
+            
+            <!-- Admin Header -->
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 rounded-xl bg-crimson-50 text-crimson-600">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-slate-900 text-base sm:text-lg">Hệ Thống Quản Trị Admin</h3>
+                </div>
+                <button onclick="closeAdminModal()" class="p-2 rounded-full hover:bg-slate-200/60 text-slate-500 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Admin Password Login View -->
+            <div id="adminLoginView" class="p-8 sm:p-12 text-center flex-1 flex flex-col items-center justify-center">
+                <div class="w-16 h-16 rounded-2xl bg-crimson-50 border border-crimson-100 flex items-center justify-center mb-5 text-crimson-600">
+                    <i data-lucide="lock" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-heading font-extrabold text-slate-900 mb-2">Đăng Nhập Quản Trị</h3>
+                <p class="text-xs text-slate-500 mb-6">Vui lòng nhập mật khẩu quản trị viên</p>
                 
-                <div class="form-group">
-                    <label class="form-label">Trạng thái tham dự *</label>
-                    <div class="radio-group">
-                        <label class="radio-label">
-                            <input type="radio" name="status" value="Có, tôi sẽ đến" required checked> Có, tôi sẽ đến
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="status" value="Rất tiếc, tôi vắng mặt"> Rất tiếc, không thể đến
-                        </label>
+                <div class="w-full max-w-xs space-y-3">
+                    <input type="password" id="adminPwd" placeholder="Mật khẩu..." class="glass-input w-full px-4 py-3 rounded-2xl text-center font-bold text-sm" />
+                    <p id="adminPwdError" class="text-xs font-bold text-crimson-600 hidden">Mật khẩu không chính xác.</p>
+                    <button onclick="verifyAdminPassword()" class="w-full bg-crimson-600 hover:bg-crimson-700 text-white font-bold py-3.5 rounded-2xl shadow-md transition-all active:scale-95">
+                        Đăng Nhập
+                    </button>
+                </div>
+            </div>
+
+            <!-- Admin Dashboard Panel -->
+            <div id="adminDashboardView" class="hidden flex-1 flex flex-col overflow-hidden">
+                <!-- Navigation Tabs -->
+                <div class="px-6 py-3 bg-slate-100 border-b border-slate-200 flex flex-wrap gap-2 text-xs font-bold">
+                    <button onclick="switchAdminTab('rsvps')" id="tabBtnRSVP" class="px-4 py-2 rounded-xl bg-crimson-600 text-white shadow-xs">📋 Danh Sách Phản Hồi</button>
+                    <button onclick="switchAdminTab('config')" id="tabBtnConfig" class="px-4 py-2 rounded-xl bg-white text-slate-700 hover:bg-slate-200/60">⚙️ Sửa Thông Tin Sự Kiện</button>
+                    <button onclick="switchAdminTab('supabase')" id="tabBtnSupabase" class="px-4 py-2 rounded-xl bg-white text-slate-700 hover:bg-slate-200/60">🔌 Cấu Hình Supabase</button>
+                </div>
+
+                <!-- TAB 1: RSVPs LIST -->
+                <div id="adminTabRSVP" class="p-6 overflow-y-auto space-y-6 flex-1">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl text-center">
+                            <p class="text-[10px] font-extrabold uppercase text-emerald-800 tracking-wider mb-1">Tham Gia</p>
+                            <p class="text-3xl font-heading font-black text-emerald-600" id="statAttending">0</p>
+                        </div>
+                        <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl text-center">
+                            <p class="text-[10px] font-extrabold uppercase text-amber-800 tracking-wider mb-1">Khách Đi Cùng</p>
+                            <p class="text-3xl font-heading font-black text-amber-600" id="statGuests">0</p>
+                        </div>
+                        <div class="bg-rose-50 border border-rose-200 p-4 rounded-2xl text-center">
+                            <p class="text-[10px] font-extrabold uppercase text-rose-800 tracking-wider mb-1">Vắng Mặt</p>
+                            <p class="text-3xl font-heading font-black text-rose-600" id="statAbsent">0</p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-heading font-bold text-slate-900 text-sm">Danh Sách Chi Tiết</h4>
+                        <button onclick="loadAdminResponses()" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-colors">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5" id="refreshAdminIcon"></i> Làm Mới
+                        </button>
+                    </div>
+
+                    <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs whitespace-nowrap">
+                                <thead class="bg-slate-50 text-slate-500 font-extrabold uppercase border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-4 py-3">Thời gian</th>
+                                        <th class="px-4 py-3">Họ & Tên</th>
+                                        <th class="px-4 py-3 text-center">Trạng Thái</th>
+                                        <th class="px-4 py-3 text-center">Đi Cùng</th>
+                                        <th class="px-4 py-3">Lời Nhắn</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminTableBody" class="divide-y divide-slate-100 text-slate-700">
+                                    <tr>
+                                        <td colspan="5" class="p-6 text-center text-slate-400">Đang tải dữ liệu...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
-                <div class="form-group" id="guests-group">
-                    <label class="form-label">Số người đi cùng (vợ/chồng/con...)</label>
-                    <input type="number" id="guests" class="form-control" min="0" value="0">
+                <!-- TAB 2: EDIT EVENT CONFIG -->
+                <div id="adminTabConfig" class="p-6 overflow-y-auto space-y-4 flex-1 hidden">
+                    <h4 class="font-heading font-bold text-slate-900 text-sm mb-2">Chỉnh Sửa Thông Tin Thiệp Mời</h4>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Tiêu Đề Sự Kiện</label>
+                        <input type="text" id="editTitle" class="glass-input w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Thời Gian Organise</label>
+                        <input type="text" id="editTime" class="glass-input w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Địa Điểm Tổ Chức</label>
+                        <input type="text" id="editLocation" class="glass-input w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Link Google Maps</label>
+                        <input type="text" id="editMapLink" class="glass-input w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Lời Mời / Mô Tả</label>
+                        <textarea id="editDesc" rows="3" class="glass-input w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold"></textarea>
+                    </div>
+                    <button onclick="saveEventConfig()" class="bg-crimson-600 hover:bg-crimson-700 text-white font-bold px-6 py-3 rounded-xl text-xs shadow-md transition-all">
+                        💾 Lưu Thay Đổi
+                    </button>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Lời nhắn gửi tới lớp / Thầy</label>
-                    <textarea id="message" class="form-control" rows="3" placeholder="Nhập lời nhắn..."></textarea>
+                <!-- TAB 3: SUPABASE CONFIG -->
+                <div id="adminTabSupabase" class="p-6 overflow-y-auto space-y-4 flex-1 hidden">
+                    <h4 class="font-heading font-bold text-slate-900 text-sm mb-1">Cấu Hình Kết Nối Supabase</h4>
+                    <p class="text-xs text-slate-500">Nếu chưa cấu hình, dữ liệu sẽ tự động lưu vào LocalStorage máy khách.</p>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Supabase URL</label>
+                        <input type="text" id="sbUrl" placeholder="https://xyz.supabase.co" class="glass-input w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Supabase Anon Key</label>
+                        <input type="password" id="sbKey" placeholder="eyJhbGciOi..." class="glass-input w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold" />
+                    </div>
+                    <button onclick="saveSupabaseConfig()" class="bg-crimson-600 hover:bg-crimson-700 text-white font-bold px-6 py-3 rounded-xl text-xs shadow-md transition-all">
+                        🔌 Lưu Cấu Hình Supabase
+                    </button>
+
+                    <div class="mt-4 p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                        <p class="text-xs font-bold text-slate-800 mb-1">Mẫu SQL tạo bảng trong Supabase SQL Editor:</p>
+                        <pre class="bg-slate-900 text-amber-300 p-3 rounded-xl text-[11px] font-mono overflow-x-auto">create table rsvps (
+  id bigint generated by default as identity primary key,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  name text,
+  status text,
+  guests int,
+  message text
+);</pre>
+                    </div>
                 </div>
+            </div>
 
-                <button type="submit" class="btn" id="submitBtn" style="width: 100%;">GỬI XÁC NHẬN</button>
-                <div id="statusMsg" style="text-align: center; margin-top: 15px; font-weight: 600; font-size: 14px;"></div>
-            </form>
-        </div>
-
-        <!-- Admin Access -->
-        <div class="admin-trigger">
-            <button onclick="document.getElementById('adminModal').style.display='flex'">Quản trị viên</button>
         </div>
     </div>
 
-    <!-- Modal Đăng nhập Admin -->
-    <div id="adminModal" class="modal">
-        <div class="modal-content">
-            <h3 style="margin-bottom: 20px;">Đăng Nhập Admin</h3>
-            <input type="password" id="adminPwd" class="form-control" placeholder="Nhập mật khẩu..." style="margin-bottom: 15px;">
-            <button onclick="checkAdmin()" class="btn" style="width: 100%; margin-bottom: 10px;">Đăng Nhập</button>
-            <button onclick="document.getElementById('adminModal').style.display='none'" class="btn btn-outline" style="width: 100%; padding: 10px;">Đóng</button>
-            <p id="adminError" style="color: red; font-size: 13px; margin-top: 10px; display: none;">Mật khẩu không đúng!</p>
-        </div>
-    </div>
-
-    <!-- Bảng Admin (Dashboard) -->
-    <div id="adminDashboard" class="admin-dashboard">
-        <div class="admin-header">
-            <h2>Bảng Quản Trị Hệ Thống</h2>
-            <div>
-                <button onclick="loadAdminData()" class="btn btn-outline" style="padding: 8px 15px; margin-right: 10px;">🔄 Làm mới</button>
-                <button onclick="closeAdmin()" class="btn" style="padding: 8px 15px;">Đóng</button>
-            </div>
-        </div>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div style="color: var(--text-gray); font-size: 14px; font-weight: 600; margin-bottom: 10px;">SỐ BẠN THAM GIA</div>
-                <div class="stat-num" id="stat-attending">0</div>
-            </div>
-            <div class="stat-card">
-                <div style="color: var(--text-gray); font-size: 14px; font-weight: 600; margin-bottom: 10px;">NGƯỜI ĐI CÙNG</div>
-                <div class="stat-num" id="stat-guests">0</div>
-            </div>
-            <div class="stat-card">
-                <div style="color: var(--text-gray); font-size: 14px; font-weight: 600; margin-bottom: 10px;">BÁO VẮNG MẶT</div>
-                <div class="stat-num" id="stat-absent" style="color: #666;">0</div>
-            </div>
-        </div>
-
-        <div class="data-table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Thời Gian</th>
-                        <th>Họ và Tên</th>
-                        <th>Trạng Thái</th>
-                        <th>Đi Cùng</th>
-                        <th>Lời Nhắn</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body">
-                    <!-- Dữ liệu sẽ được render vào đây -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-
+    <!-- MAIN JAVASCRIPT LOGIC -->
     <script>
-        /* ========================================================================= */
-        /* CẤU HÌNH SUPABASE (HÃY THAY BẰNG THÔNG TIN CỦA BẠN SAU KHI TẠO PROJECT)   */
-        /* Bảng cần tạo trên Supabase: tên bảng là 'rsvps'                           */
-        /* Cột: id (int4), created_at (timestamp), name (text), status (text),       */
-        /*      guests (int4), message (text)                                        */
-        /* ========================================================================= */
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // <-- Đổi dòng này
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // <-- Đổi dòng này
-        
+        // Init Lucide Icons
+        lucide.createIcons();
+
+        // 1. EVENT CONFIG & LOCAL STORAGE INITIALIZATION
+        let eventConfig = {
+            title: "GẶP MẶT LỚP TOÁN ANH BẢO",
+            time: "17h00 • Ngày 25/10/2026",
+            location: "Nhà hàng Ngọc Lặc Event, Ngọc Lặc, Thanh Hóa",
+            mapLink: "https://www.google.com/maps/place/Nh%C3%A0+H%C3%A0ng+Ng%E1%BB%8Dc+L%E1%BA%B7c/@20.0919115,105.3719699,788m/data=!3m2!1e3!4b1!4m6!3m5!1s0x3136f960b71070db:0x139d7cd02525b3d1!8m2!3d20.0919065!4d105.3745502!16s%2Fg%2F11m6yg25hc",
+            desc: "Trân trọng kính mời các bạn học sinh tới tham dự buổi họp mặt ấm cúng, tri ân Thầy và cùng nhau ôn lại những kỉ niệm rực rỡ nhất dưới mái trường!"
+        };
+
         let supabaseClient = null;
-        const isSupabaseConfigured = SUPABASE_URL !== 'YOUR_SUPABASE_URL';
 
-        if (isSupabaseConfigured) {
-            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        }
+        window.addEventListener('DOMContentLoaded', () => {
+            loadEventConfig();
+            initSupabaseClient();
+            applyConfigToUI();
+        });
 
-        /* TƯƠNG TÁC MỞ PHONG BÌ */
-        let isOpened = false;
-        function openEnvelope() {
-            if(isOpened) return;
-            isOpened = true;
-            
-            const envelope = document.getElementById('envelope');
-            envelope.classList.add('open-flap');
-            
-            // Pháo hoa confetti toán học
-            for(let i=0; i<30; i++) {
-                setTimeout(() => {
-                    spawnMathParticle(window.innerWidth/2, window.innerHeight/2 + 50);
-                }, i * 50);
+        function loadEventConfig() {
+            const saved = localStorage.getItem('toan_event_config');
+            if (saved) {
+                try { eventConfig = { ...eventConfig, ...JSON.parse(saved) }; } catch(e){}
             }
-
-            setTimeout(() => {
-                document.getElementById('envelope-overlay').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('envelope-overlay').style.display = 'none';
-                    const mainContent = document.getElementById('main-content');
-                    mainContent.style.opacity = '1';
-                    mainContent.style.transform = 'translateY(0)';
-                }, 1000);
-            }, 800);
         }
 
-        /* HIỆU ỨNG CHẠM TẠO RA KÝ TỰ TOÁN HỌC */
-        const mathSymbols = ['π', '√x', '∫', 'Σ', '∞', 'e', 'α', 'β'];
-        document.addEventListener('click', function(e) {
-            if(!isOpened && e.target.closest('#envelope-overlay')) return;
-            spawnMathParticle(e.clientX, e.clientY);
-        });
+        function applyConfigToUI() {
+            document.getElementById('displayTitle').innerHTML = eventConfig.title.replace('ANH BẢO', '<span class="text-crimson-gradient">ANH BẢO</span>');
+            document.getElementById('displayTime').innerText = eventConfig.time;
+            document.getElementById('displayLocation').innerText = eventConfig.location;
+            document.getElementById('displayMapLink').href = eventConfig.mapLink;
+            document.getElementById('displayDesc').innerText = eventConfig.desc;
 
-        function spawnMathParticle(x, y) {
-            const el = document.createElement('div');
-            el.className = 'particle';
-            el.innerText = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
-            
-            // Random tỏa ra các hướng
-            const angle = Math.random() * Math.PI * 2;
-            const radius = Math.random() * 50 + 20;
-            const xOffset = Math.cos(angle) * radius;
-            const yOffset = Math.sin(angle) * radius;
-            
-            el.style.left = (x - 10) + 'px';
-            el.style.top = (y - 10) + 'px';
-            el.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
-            
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 1000);
+            // Sync to admin inputs
+            document.getElementById('editTitle').value = eventConfig.title;
+            document.getElementById('editTime').value = eventConfig.time;
+            document.getElementById('editLocation').value = eventConfig.location;
+            document.getElementById('editMapLink').value = eventConfig.mapLink;
+            document.getElementById('editDesc').value = eventConfig.desc;
         }
 
-        /* Ẩn hiện ô nhập số người đi cùng */
-        document.querySelectorAll('input[name="status"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                const guestsGroup = document.getElementById('guests-group');
-                if(e.target.value.includes('vắng mặt')) {
-                    guestsGroup.style.display = 'none';
-                    document.getElementById('guests').value = '0';
-                } else {
-                    guestsGroup.style.display = 'block';
+        function initSupabaseClient() {
+            const url = localStorage.getItem('toan_sb_url');
+            const key = localStorage.getItem('toan_sb_key');
+            if (url && key && typeof supabase !== 'undefined') {
+                try {
+                    supabaseClient = supabase.createClient(url, key);
+                    document.getElementById('sbUrl').value = url;
+                    document.getElementById('sbKey').value = key;
+                } catch(e) {
+                    console.warn("Supabase init fallback:", e);
                 }
-            });
+            }
+        }
+
+        // Toast Helper
+        function showToast(msg, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.className = `fixed top-6 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-2xl shadow-2xl z-[10000] transition-all duration-300 font-sans font-semibold text-sm text-center min-w-[280px] backdrop-blur-xl border ${
+                type === 'error' ? 'bg-rose-900/90 border-rose-500 text-rose-100' :
+                type === 'success' ? 'bg-emerald-900/90 border-emerald-500 text-emerald-100' :
+                'bg-slate-900/90 border-slate-700 text-white'
+            }`;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 3500);
+        }
+
+        // 2. ENVELOPE OPENING ANIMATION
+        let isEnvelopeOpened = false;
+        function openEnvelope() {
+            if (isEnvelopeOpened) return;
+            isEnvelopeOpened = true;
+
+            const wrapper = document.getElementById('envelopeWrapper');
+            const overlay = document.getElementById('envelopeOverlay');
+            const mainContent = document.getElementById('mainContent');
+
+            wrapper.classList.add('envelope-open');
+
+            // Burst Confetti
+            setTimeout(() => {
+                if (typeof confetti === 'function') {
+                    confetti({
+                        particleCount: 100,
+                        spread: 80,
+                        origin: { y: 0.6 },
+                        colors: ['#DC2626', '#EAB308', '#FFFFFF', '#991B1B']
+                    });
+                }
+            }, 300);
+
+            // Fade Envelope out & Reveal Card
+            setTimeout(() => {
+                overlay.classList.add('opacity-0');
+                setTimeout(() => {
+                    overlay.remove();
+                    mainContent.classList.remove('hidden');
+                    void mainContent.offsetWidth; // Trigger reflow
+                    mainContent.classList.remove('opacity-0', 'translate-y-10');
+                }, 700);
+            }, 900);
+        }
+
+        // 3. FLOATING MATH SYMBOL PARTICLES ON TAP
+        const mathParticleSymbols = ['\u03C0', '\u221A', '\u222B', '\u2211', '\u221E', 'e', '\u03B1', '\u03B2'];
+        document.addEventListener('click', (e) => {
+            const tag = e.target.tagName;
+            if (['INPUT', 'TEXTAREA', 'BUTTON', 'A', 'SELECT', 'LABEL'].includes(tag) || e.target.closest('button') || e.target.closest('a')) return;
+
+            const particle = document.createElement('div');
+            particle.className = 'math-particle';
+            particle.style.left = `${e.clientX}px`;
+            particle.style.top = `${e.clientY}px`;
+            particle.innerText = mathParticleSymbols[Math.floor(Math.random() * mathParticleSymbols.length)];
+            document.body.appendChild(particle);
+            setTimeout(() => particle.remove(), 1200);
         });
 
-        /* CƠ CHẾ CHỐNG SPAM & GỬI DỮ LIỆU TỚI SUPABASE */
-        async function submitRSVP(e) {
+        // 4. RSVP SUBMISSION WITH RATE-LIMITING
+        async function handleRSVPSubmit(e) {
             e.preventDefault();
-            
-            const btn = document.getElementById('submitBtn');
-            const statusMsg = document.getElementById('statusMsg');
 
-            // 1. Kiểm tra Anti-Spam (giới hạn 1 phút mỗi lần gửi)
-            const lastSubmitTime = localStorage.getItem('last_submit_time');
-            if (lastSubmitTime && (Date.now() - parseInt(lastSubmitTime)) < 60000) { // 60,000ms = 1 phút
-                statusMsg.style.color = 'red';
-                statusMsg.innerText = "⏳ Bạn gửi quá nhanh. Vui lòng đợi 1 phút trước khi gửi lại!";
+            // Rate limit check (1 minute)
+            const lastSubmitted = localStorage.getItem('toan_last_rsvp_time');
+            if (lastSubmitted && (Date.now() - parseInt(lastSubmitted, 10)) < 60000) {
+                showToast("⏳ Vui lòng đợi 1 phút trước khi gửi lại nhé!", "error");
                 return;
             }
 
-            const dataObj = {
-                name: document.getElementById('name').value,
-                status: document.querySelector('input[name="status"]:checked').value,
-                guests: parseInt(document.getElementById('guests').value) || 0,
-                message: document.getElementById('message').value,
-                created_at: new Date().toISOString()
+            const btn = document.getElementById('rsvpSubmitBtn');
+            const originalBtnHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> <span>Đang xử lý...</span>`;
+            lucide.createIcons();
+
+            const rsvpData = {
+                created_at: new Date().toISOString(),
+                name: document.getElementById('guestName').value.trim(),
+                status: document.querySelector('input[name="attendance"]:checked').value,
+                guests: parseInt(document.getElementById('guestCount').value, 10) || 0,
+                message: document.getElementById('guestNote').value.trim()
             };
 
-            btn.disabled = true;
-            btn.innerText = "ĐANG GỬI...";
-            statusMsg.innerText = "";
-
             try {
-                // CHẠY NGẦM BẤT ĐỒNG BỘ: Không bắt User đợi lâu
-                if (isSupabaseConfigured) {
-                    // Gửi lên Supabase
-                    const { error } = await supabaseClient
-                        .from('rsvps')
-                        .insert([dataObj]);
+                if (supabaseClient) {
+                    const { error } = await supabaseClient.from('rsvps').insert([rsvpData]);
                     if (error) throw error;
                 } else {
-                    // Chế độ Fallback mô phỏng nếu chưa có Supabase Key
-                    let localData = JSON.parse(localStorage.getItem('mock_rsvps') || '[]');
-                    localData.push(dataObj);
-                    localStorage.setItem('mock_rsvps', JSON.stringify(localData));
-                    await new Promise(r => setTimeout(r, 800)); // giả lập trễ mạng
+                    // LocalStorage fallback
+                    const existing = JSON.parse(localStorage.getItem('toan_local_rsvps') || '[]');
+                    existing.unshift(rsvpData);
+                    localStorage.setItem('toan_local_rsvps', JSON.stringify(existing));
+                    await new Promise(r => setTimeout(r, 600));
                 }
 
-                // Thành công
-                localStorage.setItem('last_submit_time', Date.now().toString()); // Ghi nhận thời gian gửi để chống Spam
-                btn.innerText = "ĐÃ GỬI THÀNH CÔNG!";
-                btn.style.backgroundColor = "#10B981"; // Đổi màu xanh lá
-                statusMsg.style.color = "#10B981";
-                statusMsg.innerText = "🎉 Cảm ơn bạn đã xác nhận tham dự!";
-                document.getElementById('rsvpForm').reset();
-                
-                // Khôi phục nút sau 5 giây để người dùng không tưởng web bị đơ
-                setTimeout(() => {
-                    btn.disabled = false;
-                    btn.innerText = "GỬI XÁC NHẬN";
-                    btn.style.backgroundColor = "var(--primary-crimson)";
-                    statusMsg.innerText = "";
-                }, 5000);
+                localStorage.setItem('toan_last_rsvp_time', Date.now().toString());
 
-            } catch (error) {
-                console.error("Lỗi:", error);
+                // UI Transition
+                document.getElementById('rsvpForm').classList.add('hidden');
+                document.getElementById('rsvpSuccessMsg').classList.remove('hidden');
+                showToast("🎉 Đã gửi phản hồi thành công!", "success");
+
+            } catch (err) {
+                console.error("RSVP Submission Error:", err);
+                showToast("❌ Lỗi khi lưu dữ liệu. Vui lòng thử lại!", "error");
+            } finally {
                 btn.disabled = false;
-                btn.innerText = "THỬ LẠI";
-                statusMsg.style.color = 'red';
-                statusMsg.innerText = "❌ Có lỗi xảy ra khi lưu dữ liệu. Vui lòng thử lại!";
+                btn.innerHTML = originalBtnHtml;
+                lucide.createIcons();
             }
         }
 
-        /* ADMIN SCRIPT */
-        function checkAdmin() {
+        function resetRSVPForm() {
+            document.getElementById('rsvpForm').reset();
+            document.getElementById('rsvpForm').classList.remove('hidden');
+            document.getElementById('rsvpSuccessMsg').classList.add('hidden');
+        }
+
+        // 5. ADMIN DASHBOARD MODAL & TABS
+        function openAdminModal() {
+            const modal = document.getElementById('adminModal');
+            const box = document.getElementById('adminModalBox');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                box.classList.remove('scale-95');
+            }, 10);
+            document.getElementById('adminPwd').value = '';
+            document.getElementById('adminPwdError').classList.add('hidden');
+        }
+
+        function closeAdminModal() {
+            const modal = document.getElementById('adminModal');
+            const box = document.getElementById('adminModalBox');
+            modal.classList.add('opacity-0');
+            box.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.getElementById('adminLoginView').classList.remove('hidden');
+                document.getElementById('adminDashboardView').classList.add('hidden');
+            }, 300);
+        }
+
+        function verifyAdminPassword() {
             const pwd = document.getElementById('adminPwd').value;
-            if(pwd === 'toananhbao' || pwd === '123456') {
-                document.getElementById('adminModal').style.display = 'none';
-                document.getElementById('adminPwd').value = '';
-                document.getElementById('adminError').style.display = 'none';
-                document.getElementById('adminDashboard').style.display = 'block';
-                loadAdminData();
+            if (pwd === 'toananhbao' || pwd === '123456') {
+                document.getElementById('adminLoginView').classList.add('hidden');
+                document.getElementById('adminDashboardView').classList.remove('hidden');
+                switchAdminTab('rsvps');
+                loadAdminResponses();
             } else {
-                document.getElementById('adminError').style.display = 'block';
+                document.getElementById('adminPwdError').classList.remove('hidden');
             }
         }
 
-        function closeAdmin() {
-            document.getElementById('adminDashboard').style.display = 'none';
+        function switchAdminTab(tabName) {
+            document.getElementById('adminTabRSVP').classList.add('hidden');
+            document.getElementById('adminTabConfig').classList.add('hidden');
+            document.getElementById('adminTabSupabase').classList.add('hidden');
+
+            document.getElementById('tabBtnRSVP').className = 'px-4 py-2 rounded-xl bg-white text-slate-700 hover:bg-slate-200/60';
+            document.getElementById('tabBtnConfig').className = 'px-4 py-2 rounded-xl bg-white text-slate-700 hover:bg-slate-200/60';
+            document.getElementById('tabBtnSupabase').className = 'px-4 py-2 rounded-xl bg-white text-slate-700 hover:bg-slate-200/60';
+
+            if (tabName === 'rsvps') {
+                document.getElementById('adminTabRSVP').classList.remove('hidden');
+                document.getElementById('tabBtnRSVP').className = 'px-4 py-2 rounded-xl bg-crimson-600 text-white shadow-xs';
+            } else if (tabName === 'config') {
+                document.getElementById('adminTabConfig').classList.remove('hidden');
+                document.getElementById('tabBtnConfig').className = 'px-4 py-2 rounded-xl bg-crimson-600 text-white shadow-xs';
+            } else if (tabName === 'supabase') {
+                document.getElementById('adminTabSupabase').classList.remove('hidden');
+                document.getElementById('tabBtnSupabase').className = 'px-4 py-2 rounded-xl bg-crimson-600 text-white shadow-xs';
+            }
         }
 
-        async function loadAdminData() {
-            const tbody = document.getElementById('table-body');
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Đang tải dữ liệu...</td></tr>';
-            
+        async function loadAdminResponses() {
+            const tbody = document.getElementById('adminTableBody');
+            const icon = document.getElementById('refreshAdminIcon');
+            if(icon) icon.classList.add('animate-spin');
+
+            tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400">Đang tải dữ liệu...</td></tr>`;
+
+            let responses = [];
+
             try {
-                let list = [];
-                
-                if (isSupabaseConfigured) {
+                if (supabaseClient) {
                     const { data, error } = await supabaseClient
                         .from('rsvps')
                         .select('*')
                         .order('created_at', { ascending: false });
                     if (error) throw error;
-                    list = data;
+                    responses = data || [];
                 } else {
-                    // Fallback
-                    list = JSON.parse(localStorage.getItem('mock_rsvps') || '[]');
-                    list.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+                    responses = JSON.parse(localStorage.getItem('toan_local_rsvps') || '[]');
                 }
 
-                // Thống kê
-                let attendCount = 0;
-                let absentCount = 0;
-                let guestsCount = 0;
-
-                tbody.innerHTML = '';
-                if(list.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Chưa có phản hồi nào.</td></tr>';
-                } else {
-                    list.forEach(item => {
-                        const isAttend = item.status.includes('Có');
-                        if(isAttend) { attendCount++; guestsCount += parseInt(item.guests||0); }
-                        else { absentCount++; }
-
-                        const d = new Date(item.created_at);
-                        const dateStr = `${d.getDate()}/${d.getMonth()+1} ${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`;
-                        
-                        tbody.innerHTML += `
-                            <tr>
-                                <td style="font-size: 13px; color: #666;">${dateStr}</td>
-                                <td style="font-weight: 600;">${item.name}</td>
-                                <td><span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; 
-                                    background: ${isAttend ? '#DEF7EC' : '#FDE8E8'}; color: ${isAttend ? '#03543F' : '#9B1C1C'}">
-                                    ${item.status}</span></td>
-                                <td style="text-align:center;">${item.guests}</td>
-                                <td><i style="color:#666;">${item.message || '-'}</i></td>
-                            </tr>
-                        `;
-                    });
-                }
-
-                // Cập nhật số liệu
-                document.getElementById('stat-attending').innerText = attendCount;
-                document.getElementById('stat-guests').innerText = guestsCount;
-                document.getElementById('stat-absent').innerText = absentCount;
+                renderAdminTable(responses);
 
             } catch (err) {
-                console.error(err);
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Lỗi tải dữ liệu. Hãy kiểm tra kết nối Supabase.</td></tr>';
+                console.error("Fetch Admin Error:", err);
+                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-rose-500 font-bold">Không thể tải CSDL. Hãy kiểm tra lại Supabase Key.</td></tr>`;
+            } finally {
+                if(icon) setTimeout(() => icon.classList.remove('animate-spin'), 400);
             }
+        }
+
+        function renderAdminTable(list) {
+            const tbody = document.getElementById('adminTableBody');
+            let attend = 0, guests = 0, absent = 0;
+
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400">Chưa có dữ liệu phản hồi.</td></tr>`;
+            } else {
+                tbody.innerHTML = list.map(item => {
+                    const isYes = item.status.includes('Tham gia') || item.status.includes('Có');
+                    if (isYes) {
+                        attend++;
+                        guests += (item.guests || 0);
+                    } else {
+                        absent++;
+                    }
+
+                    const dateFormatted = new Date(item.created_at || Date.now()).toLocaleString('vi-VN', {
+                        day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
+                    });
+
+                    return `
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="px-4 py-3 text-slate-400 font-mono text-[11px]">${escapeHtml(dateFormatted)}</td>
+                            <td class="px-4 py-3 font-bold text-slate-900">${escapeHtml(item.name)}</td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${
+                                    isYes ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+                                }">
+                                    ${escapeHtml(item.status)}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-center font-bold text-amber-600">+${item.guests || 0}</td>
+                            <td class="px-4 py-3 text-slate-600 max-w-[150px] truncate" title="${escapeHtml(item.message || item.note)}">${escapeHtml(item.message || item.note || '-')}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            document.getElementById('statAttending').innerText = attend;
+            document.getElementById('statGuests').innerText = '+' + guests;
+            document.getElementById('statAbsent').innerText = absent;
+        }
+
+        function saveEventConfig() {
+            eventConfig.title = document.getElementById('editTitle').value.trim();
+            eventConfig.time = document.getElementById('editTime').value.trim();
+            eventConfig.location = document.getElementById('editLocation').value.trim();
+            eventConfig.mapLink = document.getElementById('editMapLink').value.trim();
+            eventConfig.desc = document.getElementById('editDesc').value.trim();
+
+            localStorage.setItem('toan_event_config', JSON.stringify(eventConfig));
+            applyConfigToUI();
+            showToast("Đã lưu thông tin thiệp mới!", "success");
+        }
+
+        function saveSupabaseConfig() {
+            const url = document.getElementById('sbUrl').value.trim();
+            const key = document.getElementById('sbKey').value.trim();
+
+            if (url && key) {
+                localStorage.setItem('toan_sb_url', url);
+                localStorage.setItem('toan_sb_key', key);
+                initSupabaseClient();
+                showToast("Đã lưu cấu hình Supabase!", "success");
+                loadAdminResponses();
+            } else {
+                showToast("Vui lòng nhập đủ URL và Key", "error");
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>"'`=\/]/g, function (s) {
+                return {
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '/': '&#x2F;', '`': '&#x60;', '=': '&#x3D;'
+                }[s];
+            });
         }
     </script>
 </body>
