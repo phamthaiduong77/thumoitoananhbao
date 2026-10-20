@@ -13,7 +13,7 @@
             --dark-red: #991B1B;
             --light-red-bg: #FEF2F2;
             --pure-white: #FFFFFF;
-            --glass-bg: rgba(255, 255, 255, 0.82);
+            --glass-bg: rgba(255, 255, 255, 0.85);
             --glass-border: rgba(220, 38, 38, 0.2);
             --text-dark: #1E293B;
             --text-muted: #64748B;
@@ -40,7 +40,7 @@
             position: relative;
         }
 
-        /* ================= 1. ENVELOPE OVERLAY (LỚP PHONG BÌ 3D MỚI) ================= */
+        /* ================= 1. ENVELOPE OVERLAY ================= */
         #envelope-overlay {
             position: fixed;
             inset: 0;
@@ -435,7 +435,35 @@
 
         .stat-num { font-size: 34px; font-weight: 900; color: var(--primary-red); }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .search-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 11px 16px;
+            background: #F1F5F9;
+            border: 1.5px solid #CBD5E1;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-red);
+            background: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #E2E8F0; font-size: 14px; }
         th { font-weight: 700; color: var(--text-muted); background: #F8FAFC; }
 
@@ -462,6 +490,7 @@
             .glass-card { padding: 28px 20px; }
             .envelope-wrapper { max-width: 320px; height: 210px; }
             .wax-seal { width: 56px; height: 56px; font-size: 20px; }
+            .search-container { flex-direction: column; align-items: stretch; }
         }
     </style>
 </head>
@@ -571,7 +600,7 @@
     <div id="adminModal" class="admin-modal">
         <div class="admin-box">
             <h3 style="margin-bottom: 18px; font-size: 20px; color: var(--text-dark);">Đăng Nhập Quản Trị</h3>
-            <input type="password" id="adminPwd" class="form-input" placeholder="Mật khẩu Admin..." style="margin-bottom: 15px;">
+            <input type="password" id="adminPwd" class="form-input" placeholder="Mật khẩu Admin..." style="margin-bottom: 15px;" onkeypress="if(event.key==='Enter') verifyAdminPassword()">
             <button onclick="verifyAdminPassword()" class="btn-primary" style="margin-bottom: 10px;">Đăng Nhập</button>
             <button onclick="closeAdminModal()" class="btn-primary btn-outline" style="padding: 10px;">Đóng</button>
             <p id="adminError" style="color: var(--primary-red); font-size: 13px; margin-top: 10px; display: none;">Mật khẩu không đúng!</p>
@@ -601,9 +630,10 @@
                 </div>
             </div>
 
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 style="font-size: 16px;">Danh Sách Khách Mời Phản Hồi</h3>
-                <button onclick="fetchRSVPData()" class="btn-primary" style="width: auto; padding: 8px 16px; font-size: 13px;">🔄 Làm Mới Dữ Liệu</button>
+            <!-- THANH TÌM KIẾM TÊN TỨC THÌ -->
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-input" placeholder="🔍 Tìm kiếm tên người phản hồi..." oninput="filterRSVPData()">
+                <button onclick="fetchRSVPData()" class="btn-primary" style="width: auto; padding: 11px 20px; font-size: 13px; white-space: nowrap;">🔄 Làm Mới Dữ Liệu</button>
             </div>
 
             <div style="overflow-x: auto;">
@@ -618,7 +648,7 @@
                         </tr>
                     </thead>
                     <tbody id="rsvp-table-body">
-                        <!-- Table content dynamically injected -->
+                        <!-- Content dynamically loaded -->
                     </tbody>
                 </table>
             </div>
@@ -632,6 +662,7 @@
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndlZXFwbGVqcXFkcGpqZGd1eXN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MDMyNTEsImV4cCI6MjEwODA3OTI1MX0.mOklk9JEb-Hp5kN9Kx-ucGuJ-LyLDPtOCLS3u2AJIok";
 
         let isOpened = false;
+        let rsvpCacheData = []; // Cache list for real-time name searching
 
         /* ================= 1. MỞ PHONG BÌ 3D ================= */
         function handleOpenEnvelope(e) {
@@ -641,7 +672,7 @@
             const wrapper = document.getElementById('envelopeWrapper');
             wrapper.classList.add('open');
 
-            // Bắn hạt toán học
+            // Spawn particles
             for (let i = 0; i < 20; i++) {
                 setTimeout(() => spawnParticle(window.innerWidth / 2, window.innerHeight / 2), i * 35);
             }
@@ -694,7 +725,7 @@
         async function handleFormSubmit(e) {
             e.preventDefault();
 
-            // Cơ chế chống Spam (60 giây)
+            // Anti-Spam mechanism (60s)
             const COOLDOWN_MS = 60000;
             const lastSubmitTs = localStorage.getItem('last_rsvp_ts');
             if (lastSubmitTs && (Date.now() - parseInt(lastSubmitTs)) < COOLDOWN_MS) {
@@ -756,7 +787,7 @@
             fb.innerText = text;
         }
 
-        /* ================= 4. ADMIN DASHBOARD ================= */
+        /* ================= 4. ADMIN DASHBOARD & SEARCH ================= */
         function openAdminModal() {
             document.getElementById('adminModal').style.display = 'flex';
         }
@@ -766,8 +797,8 @@
         }
 
         function verifyAdminPassword() {
-            const pwd = document.getElementById('adminPwd').value;
-            if (pwd === 'toananhbao' || pwd === '123456') {
+            const pwd = document.getElementById('adminPwd').value.trim();
+            if (pwd === 'toananhbao2026') {
                 closeAdminModal();
                 document.getElementById('adminPwd').value = '';
                 document.getElementById('adminError').style.display = 'none';
@@ -801,30 +832,15 @@
                     throw new Error(`HTTP ${response.status}: ${errBody}`);
                 }
 
-                const data = await response.json();
+                rsvpCacheData = await response.json();
+                
+                // Update Statistics
                 let attend = 0, guests = 0, absent = 0;
-                tbody.innerHTML = '';
-
-                if (!Array.isArray(data) || data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Chưa có phản hồi nào.</td></tr>';
-                } else {
-                    data.forEach(item => {
+                if (Array.isArray(rsvpCacheData)) {
+                    rsvpCacheData.forEach(item => {
                         const isYes = item.status && item.status.includes('Có');
                         if (isYes) { attend++; guests += (parseInt(item.guests) || 0); }
                         else absent++;
-
-                        const d = new Date(item.created_at || Date.now());
-                        const timeStr = `${d.getDate()}/${d.getMonth()+1} ${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`;
-
-                        tbody.innerHTML += `
-                            <tr>
-                                <td style="color:#64748B; font-size:12px;">${timeStr}</td>
-                                <td style="font-weight:700;">${item.name || '-'}</td>
-                                <td><span style="padding:4px 8px; border-radius:6px; font-weight:700; font-size:12px; background:${isYes ? '#DEF7EC' : '#FDE8E8'}; color:${isYes ? '#03543F' : '#9B1C1C'}">${item.status || '-'}</span></td>
-                                <td style="text-align:center;">${item.guests || 0}</td>
-                                <td>${item.message || '-'}</td>
-                            </tr>
-                        `;
                     });
                 }
 
@@ -832,10 +848,59 @@
                 document.getElementById('stat-guests').innerText = guests;
                 document.getElementById('stat-absent').innerText = absent;
 
+                // Render with current search filter
+                filterRSVPData();
+
             } catch(e) {
                 console.error("Lỗi fetch:", e);
                 tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red; font-weight:bold;">Không thể tải dữ liệu: ${e.message}</td></tr>`;
             }
+        }
+
+        /* SEARCH FILTER LOGIC */
+        function filterRSVPData() {
+            const query = (document.getElementById('search-input').value || '').toLowerCase().trim();
+            const tbody = document.getElementById('rsvp-table-body');
+            tbody.innerHTML = '';
+
+            if (!Array.isArray(rsvpCacheData) || rsvpCacheData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Chưa có phản hồi nào.</td></tr>';
+                return;
+            }
+
+            const filtered = rsvpCacheData.filter(item => 
+                (item.name || '').toLowerCase().includes(query)
+            );
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#64748B;">Không tìm thấy người nào có tên "${escapeHtml(query)}"</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const isYes = item.status && item.status.includes('Có');
+                const d = new Date(item.created_at || Date.now());
+                const timeStr = `${d.getDate()}/${d.getMonth()+1} ${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`;
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="color:#64748B; font-size:12px;">${timeStr}</td>
+                        <td style="font-weight:700;">${escapeHtml(item.name || '-')}</td>
+                        <td><span style="padding:4px 8px; border-radius:6px; font-weight:700; font-size:12px; background:${isYes ? '#DEF7EC' : '#FDE8E8'}; color:${isYes ? '#03543F' : '#9B1C1C'}">${escapeHtml(item.status || '-')}</span></td>
+                        <td style="text-align:center;">${item.guests || 0}</td>
+                        <td>${escapeHtml(item.message || '-')}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>"'`=\/]/g, function (s) {
+                return {
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '/': '&#x2F;', '`': '&#x60;', '=': '&#x3D;'
+                }[s];
+            });
         }
     </script>
 </body>
