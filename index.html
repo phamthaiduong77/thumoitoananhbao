@@ -5,18 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Thiệp Mời Gặp Mặt Lớp Toán Anh Bảo</title>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;0,700;0,800;0,900;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary-red: #DC2626;
-            --dark-red: #991B1B;
-            --light-red-bg: #FEF2F2;
-            --pure-white: #FFFFFF;
-            --glass-bg: rgba(255, 255, 255, 0.85);
-            --glass-border: rgba(220, 38, 38, 0.2);
+            --primary-red: #FF2A54;
+            --primary-orange: #FF7B29;
+            --gradient-main: linear-gradient(135deg, var(--primary-red), var(--primary-orange));
+            --gradient-hover: linear-gradient(135deg, #E61E45, #E6661C);
+            --light-bg: #FFFFFF;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-border: rgba(255, 42, 84, 0.15);
             --text-dark: #1E293B;
             --text-muted: #64748B;
+            --light-red-bg: #FFF1F2;
         }
 
         * {
@@ -30,8 +32,8 @@
         body {
             background-color: #FAFAFA;
             background-image: 
-                radial-gradient(rgba(220, 38, 38, 0.06) 1.5px, transparent 1.5px),
-                radial-gradient(rgba(153, 27, 27, 0.04) 1.5px, transparent 1.5px);
+                radial-gradient(rgba(255, 42, 84, 0.05) 1.5px, transparent 1.5px),
+                radial-gradient(rgba(255, 123, 41, 0.03) 1.5px, transparent 1.5px);
             background-size: 28px 28px;
             background-position: 0 0, 14px 14px;
             color: var(--text-dark);
@@ -40,13 +42,13 @@
             position: relative;
         }
 
-        /* ================= 1. ENVELOPE OVERLAY ================= */
+        /* ================= 1. MÀN HÌNH CHỜ (ĐỒ THỊ OXY NÉT LIỀN) ================= */
         #envelope-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(15, 23, 42, 0.88);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.96); 
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -54,8 +56,81 @@
             z-index: 9999;
             transition: opacity 0.8s ease, visibility 0.8s;
             cursor: pointer;
-            padding: 20px;
+            overflow: hidden;
         }
+
+        .math-bg-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .oxy-graph {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.6;
+        }
+
+        .axis-line {
+            stroke: #CBD5E1;
+            stroke-width: 1.5;
+            vector-effect: non-scaling-stroke;
+        }
+
+        .grid-line {
+            stroke: #F1F5F9;
+            stroke-width: 1;
+            vector-effect: non-scaling-stroke;
+        }
+
+        .function-line {
+            fill: none;
+            stroke-width: 3;
+            stroke-linecap: round;
+            vector-effect: non-scaling-stroke;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+        }
+
+        /* 3 đường đồ thị riêng biệt, nét liền, vẽ tự động */
+        .line-1 {
+            stroke: var(--primary-red);
+            animation: drawContinuous 6s ease-in-out infinite alternate;
+        }
+
+        .line-2 {
+            stroke: var(--primary-orange);
+            animation: drawContinuous 8s ease-in-out infinite alternate-reverse;
+        }
+
+        .line-3 {
+            stroke: #FF8A9F; /* Đỏ nhạt */
+            animation: drawContinuous 7s ease-in-out infinite alternate;
+        }
+
+        @keyframes drawContinuous {
+            0% { stroke-dashoffset: 1000; }
+            100% { stroke-dashoffset: 0; }
+        }
+
+        .bg-symbol {
+            position: absolute;
+            color: rgba(100, 116, 139, 0.1); 
+            font-family: 'Georgia', serif;
+            font-style: italic;
+            font-weight: bold;
+            user-select: none;
+        }
+        
+        .sym-1 { top: 10%; left: 10%; font-size: 60px; transform: rotate(-15deg); }
+        .sym-2 { top: 20%; right: 15%; font-size: 80px; transform: rotate(10deg); }
+        .sym-3 { bottom: 15%; left: 20%; font-size: 70px; transform: rotate(20deg); }
+        .sym-4 { bottom: 25%; right: 10%; font-size: 50px; transform: rotate(-10deg); }
+        .sym-5 { top: 45%; left: 5%; font-size: 40px; transform: rotate(5deg); }
+        .sym-6 { top: 50%; right: 5%; font-size: 90px; transform: rotate(-5deg); }
 
         .envelope-wrapper {
             position: relative;
@@ -63,22 +138,23 @@
             max-width: 420px;
             height: 260px;
             perspective: 1000px;
+            z-index: 10;
         }
 
         .envelope {
             position: relative;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #DC2626, #991B1B);
+            background: var(--gradient-main);
             border-radius: 18px;
-            box-shadow: 0 25px 50px -12px rgba(220, 38, 38, 0.4), 0 0 25px rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(255, 42, 84, 0.3), 0 0 25px rgba(255, 123, 41, 0.2);
             overflow: visible;
         }
 
         .envelope-flap {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(180deg, #EF4444, #DC2626);
+            background: linear-gradient(180deg, #FF4567, var(--primary-red));
             clip-path: polygon(0 0, 100% 0, 50% 55%);
             transform-origin: top;
             transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.7s;
@@ -89,7 +165,7 @@
         .envelope-pocket {
             position: absolute;
             inset: 0;
-            background: linear-gradient(0deg, #B91C1C 65%, transparent 65%);
+            background: linear-gradient(0deg, #E61E45 65%, transparent 65%);
             clip-path: polygon(0 100%, 100% 100%, 100% 38%, 50% 68%, 0 38%);
             border-radius: 0 0 18px 18px;
             z-index: 2;
@@ -99,10 +175,10 @@
             position: absolute;
             top: 52%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 68px; height: 68px;
+            width: 70px; height: 70px;
             background: #FFFFFF;
             color: var(--primary-red);
-            border: 3px solid var(--primary-red);
+            border: 3px solid var(--primary-orange);
             border-radius: 50%;
             display: flex;
             justify-content: center;
@@ -111,38 +187,33 @@
             font-weight: 900;
             font-size: 24px;
             z-index: 4;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
             transition: transform 0.4s ease, opacity 0.4s ease;
             animation: pulse-border 2s infinite;
         }
 
         @keyframes pulse-border {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.5), 0 8px 20px rgba(0, 0, 0, 0.3); }
-            50% { box-shadow: 0 0 0 12px rgba(220, 38, 38, 0), 0 12px 25px rgba(0, 0, 0, 0.4); }
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 123, 41, 0.5), 0 8px 20px rgba(0, 0, 0, 0.2); }
+            50% { box-shadow: 0 0 0 12px rgba(255, 123, 41, 0), 0 12px 25px rgba(0, 0, 0, 0.3); }
         }
 
         .click-hint {
-            color: #FFFFFF;
-            margin-top: 30px;
+            color: var(--text-dark);
+            margin-top: 35px;
             font-size: 15px;
             font-weight: 700;
             letter-spacing: 0.5px;
             animation: blinkText 1.8s infinite;
             text-align: center;
+            z-index: 10;
         }
 
-        @keyframes blinkText { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+        @keyframes blinkText { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
-        .envelope-wrapper.open .envelope-flap {
-            transform: rotateX(180deg);
-            z-index: 1;
-        }
-        .envelope-wrapper.open .wax-seal {
-            transform: translate(-50%, -50%) scale(0);
-            opacity: 0;
-        }
+        .envelope-wrapper.open .envelope-flap { transform: rotateX(180deg); z-index: 1; }
+        .envelope-wrapper.open .wax-seal { transform: translate(-50%, -50%) scale(0); opacity: 0; }
 
-        /* ================= 2. MAIN CONTAINER & GLASS CARDS ================= */
+        /* ================= 2. MAIN CONTAINER ================= */
         .container {
             max-width: 720px;
             margin: 0 auto;
@@ -153,14 +224,14 @@
         }
 
         .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            border: 1.5px solid var(--glass-border);
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
             border-radius: 24px;
-            box-shadow: 0 20px 40px -15px rgba(220, 38, 38, 0.1), 0 0 20px rgba(255, 255, 255, 0.9);
-            padding: 40px 30px;
-            margin-bottom: 28px;
+            box-shadow: 0 20px 40px -15px rgba(255, 42, 84, 0.08), 0 0 15px rgba(255, 255, 255, 0.9);
+            padding: 45px 35px;
+            margin-bottom: 30px;
             position: relative;
             overflow: hidden;
         }
@@ -168,8 +239,8 @@
         .glass-card::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; height: 5px;
-            background: linear-gradient(90deg, #DC2626, #FFFFFF, #DC2626);
+            top: 0; left: 0; right: 0; height: 6px;
+            background: var(--gradient-main);
         }
 
         .badge-red {
@@ -178,7 +249,7 @@
             gap: 8px;
             padding: 6px 18px;
             background: var(--light-red-bg);
-            border: 1px solid rgba(220, 38, 38, 0.25);
+            border: 1px solid rgba(255, 42, 84, 0.2);
             border-radius: 30px;
             color: var(--primary-red);
             font-weight: 800;
@@ -190,39 +261,53 @@
 
         .main-title {
             font-family: 'Montserrat', sans-serif;
-            font-size: 36px;
+            font-size: 38px;
             font-weight: 900;
             line-height: 1.25;
             color: var(--text-dark);
-            margin-bottom: 18px;
+            margin-bottom: 25px;
         }
 
-        .main-title span { color: var(--primary-red); }
+        .main-title span { 
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-        .description-text {
-            font-size: 16px;
-            line-height: 1.7;
-            color: var(--text-muted);
-            margin-bottom: 28px;
+        .emotional-quote {
+            position: relative;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 17px;
+            line-height: 1.8;
+            color: var(--text-dark);
+            font-style: italic;
+            font-weight: 600;
+            padding: 20px 25px;
+            background: #FFF5F6;
+            border-left: 4px solid var(--primary-red);
+            border-radius: 0 16px 16px 0;
+            margin-bottom: 30px;
+            text-align: left;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
         }
 
         .math-badges {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 30px;
+            gap: 12px;
+            margin-bottom: 35px;
         }
 
         .math-tag {
             background: #FFFFFF;
-            border: 1px solid rgba(220, 38, 38, 0.2);
-            padding: 8px 16px;
+            border: 1px solid rgba(255, 42, 84, 0.2);
+            padding: 8px 18px;
             border-radius: 12px;
             font-size: 14px;
             font-weight: 700;
             color: var(--primary-red);
-            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.05);
+            box-shadow: 0 2px 10px rgba(255, 42, 84, 0.05);
         }
 
         .info-grid {
@@ -233,10 +318,10 @@
         }
 
         .info-box {
-            background: rgba(254, 242, 242, 0.7);
-            border: 1px solid rgba(220, 38, 38, 0.15);
+            background: #FAFAFA;
+            border: 1px solid #F1F5F9;
             border-radius: 16px;
-            padding: 18px;
+            padding: 20px;
             text-align: left;
         }
 
@@ -244,7 +329,7 @@
             font-size: 11px;
             font-weight: 800;
             text-transform: uppercase;
-            color: var(--primary-red);
+            color: var(--primary-orange);
             letter-spacing: 0.5px;
             margin-bottom: 6px;
         }
@@ -258,7 +343,7 @@
             gap: 10px;
             width: 100%;
             padding: 16px 24px;
-            background: var(--primary-red);
+            background: var(--gradient-main);
             color: #FFFFFF;
             font-weight: 800;
             font-size: 15px;
@@ -266,14 +351,14 @@
             border-radius: 14px;
             cursor: pointer;
             text-decoration: none;
-            box-shadow: 0 10px 20px -5px rgba(220, 38, 38, 0.35);
+            box-shadow: 0 10px 20px -5px rgba(255, 42, 84, 0.4);
             transition: all 0.25s ease;
         }
 
         .btn-primary:hover {
-            background: var(--dark-red);
+            background: var(--gradient-hover);
             transform: translateY(-2px);
-            box-shadow: 0 14px 25px -5px rgba(220, 38, 38, 0.45);
+            box-shadow: 0 14px 25px -5px rgba(255, 42, 84, 0.5);
         }
 
         .btn-primary:disabled {
@@ -287,18 +372,19 @@
             background: transparent;
             border: 2px solid var(--primary-red);
             color: var(--primary-red);
+            box-shadow: none;
         }
 
-        .btn-outline:hover { background: var(--light-red-bg); }
+        .btn-outline:hover { background: var(--light-red-bg); box-shadow: none;}
 
         /* ================= 3. FORM RSVP ================= */
-        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group { margin-bottom: 22px; text-align: left; }
         .form-label { display: block; font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; }
 
         .form-input {
             width: 100%;
             padding: 14px 16px;
-            background: #FFFFFF;
+            background: #FAFAFA;
             border: 1.5px solid #E2E8F0;
             border-radius: 12px;
             font-size: 15px;
@@ -308,8 +394,9 @@
 
         .form-input:focus {
             outline: none;
+            background: #FFFFFF;
             border-color: var(--primary-red);
-            box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+            box-shadow: 0 0 0 4px rgba(255, 42, 84, 0.1);
         }
 
         .radio-group { display: flex; gap: 12px; flex-wrap: wrap; }
@@ -317,13 +404,14 @@
         .radio-card {
             flex: 1;
             min-width: 160px;
-            background: #FFFFFF;
+            background: #FAFAFA;
             border: 1.5px solid #E2E8F0;
             padding: 14px;
             border-radius: 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
             font-weight: 700;
             font-size: 14px;
@@ -336,12 +424,27 @@
             color: var(--primary-red);
         }
 
-        /* ================= 4. ADMIN PANEL & MODALS ================= */
+        /* Pháo hoa */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+            z-index: 100000;
+            pointer-events: none;
+        }
+        @keyframes fall {
+            0% { opacity: 1; top: -10px; transform: translateX(0) rotate(0deg); }
+            100% { opacity: 0; top: 100vh; transform: translateX(var(--vx)) rotate(360deg); }
+        }
+
+        /* ================= 4. ADMIN PANEL ================= */
         .admin-modal, .custom-confirm-modal {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(15, 23, 42, 0.75);
+            background: rgba(15, 23, 42, 0.8);
             backdrop-filter: blur(8px);
             z-index: 10000;
             justify-content: center;
@@ -378,7 +481,7 @@
             background: #FFFFFF;
             padding: 18px 24px;
             border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
         }
 
         .admin-content {
@@ -387,19 +490,19 @@
             background: #FFFFFF;
             padding: 24px;
             border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: 1fr 1fr; /* Rút xuống còn 2 cột */
             gap: 16px;
             margin-bottom: 24px;
         }
 
         .stat-box {
             background: var(--light-red-bg);
-            border: 1px solid rgba(220, 38, 38, 0.15);
+            border: 1px solid rgba(255, 42, 84, 0.1);
             padding: 18px;
             border-radius: 14px;
             text-align: center;
@@ -408,26 +511,61 @@
         .stat-num { font-size: 34px; font-weight: 900; color: var(--primary-red); }
 
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #E2E8F0; font-size: 14px; }
-        th { font-weight: 700; color: var(--text-muted); background: #F8FAFC; }
+        th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #F1F5F9; font-size: 14px; }
+        th { font-weight: 700; color: var(--text-muted); background: #F8FAFC; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px;}
 
-        .btn-delete {
+        /* Trạng thái Tham gia: Xanh / Vắng mặt: Đỏ. nowrap chống rớt dòng */
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 12px;
+            white-space: nowrap; 
+            line-height: 1.4;
+        }
+
+        .btn-minimal {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            background: #F1F5F9;
+            color: var(--text-dark);
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-minimal:hover { background: #E2E8F0; }
+
+        .btn-minimal.primary {
+            background: var(--primary-red);
+            color: white;
+            border-color: var(--primary-red);
+        }
+        .btn-minimal.primary:hover { background: var(--dark-red); }
+
+        .btn-delete-minimal {
             background: none;
-            border: none;
+            border: 1px solid transparent;
             color: #EF4444;
             cursor: pointer;
-            font-size: 18px;
-            padding: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 6px 10px;
             border-radius: 6px;
             transition: 0.2s;
         }
-        .btn-delete:hover { background: #FEE2E2; }
+        .btn-delete-minimal:hover { background: #FEE2E2; border-color: #FECACA;}
 
         /* Floating particles */
         .math-particle {
             position: fixed;
             pointer-events: none;
-            color: var(--primary-red);
+            color: var(--primary-orange);
             font-family: 'Georgia', serif;
             font-weight: bold;
             font-size: 22px;
@@ -442,18 +580,38 @@
 
         @media (max-width: 640px) {
             .info-grid { grid-template-columns: 1fr; }
-            .main-title { font-size: 28px; }
-            .glass-card { padding: 28px 20px; }
+            .main-title { font-size: 32px; }
+            .glass-card { padding: 30px 20px; }
             .envelope-wrapper { max-width: 320px; height: 210px; }
             .wax-seal { width: 56px; height: 56px; font-size: 20px; }
             .admin-header { flex-direction: column; gap: 15px; }
+            .radio-card { min-width: 100%; }
         }
     </style>
 </head>
 <body>
 
-    <!-- PHONG BÌ 3D MỞ THƯ -->
+    <!-- MÀN HÌNH CHỜ (ĐỒ THỊ TÁCH BIỆT & NÉT LIỀN) -->
     <div id="envelope-overlay" onclick="handleOpenEnvelope(event)">
+        <div class="math-bg-layer">
+            <svg class="oxy-graph" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <path d="M0,25 L100,25 M0,75 L100,75 M25,0 L25,100 M75,0 L75,100" class="grid-line" />
+                <path d="M0,50 L100,50 M50,0 L50,100" class="axis-line" />
+                
+                <!-- 3 đường đồ thị nét liền ở các vị trí khác nhau -->
+                <path d="M0,20 Q12.5,0 25,20 T50,20 T75,20 T100,20" class="function-line line-1" />
+                <path d="M0,50 Q12.5,70 25,50 T50,50 T75,50 T100,50" class="function-line line-2" />
+                <path d="M0,80 Q12.5,60 25,80 T50,80 T75,80 T100,80" class="function-line line-3" />
+            </svg>
+            
+            <div class="bg-symbol sym-1">∫f(x)dx</div>
+            <div class="bg-symbol sym-2">lim x→∞</div>
+            <div class="bg-symbol sym-3">∑n=1</div>
+            <div class="bg-symbol sym-4">y = sin(x)</div>
+            <div class="bg-symbol sym-5">π</div>
+            <div class="bg-symbol sym-6">∆</div>
+        </div>
+
         <div class="envelope-wrapper" id="envelopeWrapper">
             <div class="envelope">
                 <div class="envelope-flap"></div>
@@ -461,7 +619,7 @@
                 <div class="wax-seal">√x</div>
             </div>
         </div>
-        <div class="click-hint">Chạm vào phong bì để mở thiệp mời ✉️</div>
+        <div class="click-hint">Chạm vào phong bì để mở thiệp mời</div>
     </div>
 
     <!-- MAIN CONTAINER -->
@@ -474,9 +632,9 @@
                 GẶP MẶT LỚP TOÁN<br><span>ANH BẢO</span>
             </h1>
 
-            <p class="description-text" id="display-desc">
-                Trân trọng kính mời các bạn học sinh tới tham dự buổi họp mặt ấm cúng, tri ân Thầy và cùng nhau ôn lại những kỷ niệm rực rỡ nhất!
-            </p>
+            <div class="emotional-quote">
+                "Hàm số thời gian dẫu trôi về vô cực, những phương trình năm ấy có thể phai nhòa, nhưng tình Anh em và ký ức thanh xuân dưới mái trường vẫn mãi là hằng số. Trân trọng kính mời bạn trở về chốn xưa, cùng ôn lại những năm tháng rực rỡ nhất!"
+            </div>
 
             <div class="math-badges">
                 <div class="math-tag">∫ Kỷ niệm = ∞</div>
@@ -496,13 +654,13 @@
             </div>
 
             <a id="display-map-link" href="https://www.google.com/maps/place/Nh%C3%A0+H%C3%A0ng+Ng%E1%BB%8Dc+L%E1%BA%B7c/@20.0919115,105.3719699,788m/data=!3m2!1e3!4b1!4m6!3m5!1s0x3136f960b71070db:0x139d7cd02525b3d1!8m2!3d20.0919065!4d105.3745502!16s%2Fg%2F11m6yg25hc" target="_blank" class="btn-primary btn-outline">
-                🗺️ Mở Bản Đồ Đường Đi (Google Maps)
+                📍 Xem Bản Đồ (Google Maps)
             </a>
         </div>
 
         <!-- FORM RSVP -->
         <div class="glass-card">
-            <h2 style="font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 22px; color: var(--text-dark);">
+            <h2 style="font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 25px; color: var(--text-dark);">
                 Xác Nhận Tham Dự (RSVP)
             </h2>
 
@@ -516,28 +674,23 @@
                     <label class="form-label">Xác nhận tham dự *</label>
                     <div class="radio-group">
                         <label class="radio-card">
-                            <input type="radio" name="status" value="Có, tôi sẽ đến" checked required>
-                            <span>Có, chắc chắn đến</span>
+                            <input type="radio" name="status" value="Có, chắc chắn đến" checked required>
+                            <span style="display:flex; align-items:center; gap:8px;">Có, chắc chắn đến 🎉</span>
                         </label>
                         <label class="radio-card">
                             <input type="radio" name="status" value="Rất tiếc, vắng mặt">
-                            <span>Rất tiếc, vắng mặt</span>
+                            <span style="display:flex; align-items:center; gap:8px;">Rất tiếc, vắng mặt 🙏</span>
                         </label>
                     </div>
                 </div>
 
-                <div class="form-group" id="guests-field">
-                    <label class="form-label">Số người đi cùng (người thân/bạn bè)</label>
-                    <input type="number" id="input-guests" class="form-input" min="0" value="0">
-                </div>
-
                 <div class="form-group">
-                    <label class="form-label">Lời nhắn gửi tới lớp hoặc Thầy</label>
+                    <label class="form-label">Lời nhắn gửi tới lớp hoặc Anh</label>
                     <textarea id="input-message" class="form-input" rows="3" placeholder="Gửi câu chúc hoặc lời nhắn..."></textarea>
                 </div>
 
                 <button type="submit" id="submit-btn" class="btn-primary">
-                    ✉️ GỬI PHẢN HỒI XÁC NHẬN
+                    GỬI PHẢN HỒI XÁC NHẬN
                 </button>
 
                 <div id="status-feedback" style="text-align: center; margin-top: 15px; font-weight: 700; font-size: 14px;"></div>
@@ -546,8 +699,8 @@
 
         <!-- ADMIN LINK -->
         <div style="text-align: center; margin-top: 25px;">
-            <button onclick="openAdminModal()" style="background: none; border: none; color: #94A3B8; font-size: 13px; cursor: pointer; text-decoration: underline;">
-                🔐 Quản trị viên (Admin)
+            <button onclick="openAdminModal()" style="background: none; border: none; color: #94A3B8; font-size: 13px; font-weight: 600; cursor: pointer; letter-spacing: 0.5px;">
+                Quản trị viên
             </button>
         </div>
     </div>
@@ -555,8 +708,8 @@
     <!-- MODAL ADMIN LOGIN -->
     <div id="adminModal" class="admin-modal">
         <div class="admin-box">
-            <h3 style="margin-bottom: 18px; font-size: 20px; color: var(--text-dark);">Đăng Nhập Quản Trị</h3>
-            <input type="password" id="adminPwd" class="form-input" placeholder="Mật khẩu Admin..." style="margin-bottom: 15px;">
+            <h3 style="margin-bottom: 20px; font-size: 20px; color: var(--text-dark);">Đăng Nhập Hệ Thống</h3>
+            <input type="password" id="adminPwd" class="form-input" placeholder="Mật khẩu..." style="margin-bottom: 15px; text-align:center;">
             <button onclick="verifyAdminPassword()" class="btn-primary" style="margin-bottom: 10px;">Đăng Nhập</button>
             <button onclick="closeAdminModal()" class="btn-primary btn-outline" style="padding: 10px;">Đóng</button>
             <p id="adminError" style="color: var(--primary-red); font-size: 13px; margin-top: 10px; display: none;">Mật khẩu không đúng!</p>
@@ -566,11 +719,10 @@
     <!-- CUSTOM CONFIRM DELETE MODAL -->
     <div id="confirmDeleteModal" class="custom-confirm-modal" style="z-index: 10005;">
         <div class="admin-box" style="max-width: 380px;">
-            <div style="font-size: 40px; margin-bottom: 10px;">⚠️</div>
-            <h3 style="font-size: 20px; color: var(--text-dark); margin-bottom: 15px;">XÁC NHẬN XÓA</h3>
+            <h3 style="font-size: 20px; color: var(--text-dark); margin-bottom: 15px;">Xác Nhận Xóa</h3>
             <p id="confirmDeleteMsg" style="color: var(--text-muted); font-size: 15px; margin-bottom: 25px; line-height: 1.5;"></p>
             <div style="display: flex; gap: 10px;">
-                <button onclick="executeDelete()" class="btn-primary" style="background: #EF4444; box-shadow: none;">Có, Xóa luôn</button>
+                <button onclick="executeDelete()" class="btn-primary" style="background: #EF4444; box-shadow: none;">Xóa vĩnh viễn</button>
                 <button onclick="closeConfirmModal()" class="btn-primary btn-outline" style="color: #64748B; border-color: #CBD5E1;">Hủy</button>
             </div>
         </div>
@@ -579,30 +731,26 @@
     <!-- ADMIN PANEL -->
     <div id="adminPanel" class="admin-panel">
         <div class="admin-header">
-            <h2 style="font-size: 20px; font-weight: 800; color: var(--text-dark);">Quản Lý Danh Sách RSVP</h2>
-            <button onclick="closeAdminPanel()" class="btn-primary btn-outline" style="width: auto; padding: 8px 16px;">Đóng Admin</button>
+            <h2 style="font-size: 18px; font-weight: 800; color: var(--text-dark); letter-spacing: 0.5px;">QUẢN LÝ RSVP</h2>
+            <button onclick="closeAdminPanel()" class="btn-minimal">✕ Đóng</button>
         </div>
 
         <div class="admin-content">
             <div class="stats-grid">
                 <div class="stat-box">
-                    <div style="font-size: 12px; font-weight: 700; color: var(--text-muted);">SỐ BẠN THAM GIA</div>
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-muted);">THAM GIA</div>
                     <div class="stat-num" id="stat-attending">0</div>
                 </div>
                 <div class="stat-box">
-                    <div style="font-size: 12px; font-weight: 700; color: var(--text-muted);">NGƯỜI ĐI CÙNG</div>
-                    <div class="stat-num" id="stat-guests">0</div>
-                </div>
-                <div class="stat-box">
-                    <div style="font-size: 12px; font-weight: 700; color: var(--text-muted);">BÁO VẮNG MẶT</div>
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-muted);">VẮNG MẶT</div>
                     <div class="stat-num" id="stat-absent" style="color: #64748B;">0</div>
                 </div>
             </div>
 
-            <!-- TÌM KIẾM -->
-            <div style="margin-bottom: 18px; display: flex; gap: 10px; flex-wrap: wrap;">
-                <input type="text" id="search-input" class="form-input" placeholder="🔍 Tìm kiếm theo tên người phản hồi..." oninput="filterTableByName()" style="flex: 1; min-width: 220px;">
-                <button onclick="fetchRSVPData()" class="btn-primary" style="width: auto; padding: 12px 20px; font-size: 14px; white-space: nowrap;">🔄 Làm Mới</button>
+            <!-- TÌM KIẾM CÓ BỘ LỌC KHÔNG DẤU -->
+            <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" id="search-input" class="form-input" placeholder="⌕ Nhập tên để tìm kiếm..." oninput="filterTableByName()" style="flex: 1; min-width: 220px;">
+                <button onclick="fetchRSVPData()" class="btn-minimal primary">⟳ Làm Mới</button>
             </div>
 
             <div style="overflow-x: auto;">
@@ -612,7 +760,6 @@
                             <th>Thời Gian</th>
                             <th>Họ và Tên</th>
                             <th>Trạng Thái</th>
-                            <th>Đi Cùng</th>
                             <th>Lời Nhắn</th>
                             <th style="text-align:center;">Thao Tác</th>
                         </tr>
@@ -627,7 +774,6 @@
 
     <!-- JAVASCRIPT CORE -->
     <script>
-        /* ================= CẤU HÌNH CỐ ĐỊNH SUPABASE ================= */
         const SUPABASE_URL = "https://weeqplejqqdpjjdguysz.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndlZXFwbGVqcXFkcGpqZGd1eXN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1MDMyNTEsImV4cCI6MjEwODA3OTI1MX0.mOklk9JEb-Hp5kN9Kx-ucGuJ-LyLDPtOCLS3u2AJIok";
 
@@ -635,13 +781,30 @@
         let globalRSVPData = []; 
         let pendingDeleteId = null;
 
-        /* ================= 1. MỞ PHONG BÌ 3D ================= */
+        /* Hàm loại bỏ dấu tiếng Việt để tìm kiếm mượt mà */
+        function removeVietnameseTones(str) {
+            str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a"); 
+            str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e"); 
+            str = str.replace(/ì|í|ị|ỉ|ĩ/g,"i"); 
+            str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o"); 
+            str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u"); 
+            str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y"); 
+            str = str.replace(/đ/g,"d");
+            str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
+            str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
+            str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
+            str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ữ/g, "O");
+            str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
+            str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
+            str = str.replace(/Đ/g, "D");
+            return str;
+        }
+
+        /* 1. MỞ PHONG BÌ */
         function handleOpenEnvelope(e) {
             if (isOpened) return;
             isOpened = true;
-
-            const wrapper = document.getElementById('envelopeWrapper');
-            wrapper.classList.add('open');
+            document.getElementById('envelopeWrapper').classList.add('open');
 
             for (let i = 0; i < 20; i++) {
                 setTimeout(() => spawnParticle(window.innerWidth / 2, window.innerHeight / 2), i * 35);
@@ -659,10 +822,10 @@
             }, 650);
         }
 
-        /* ================= 2. HIỆU ỨNG HẠT TOÁN HỌC ================= */
+        /* 2. HẠT TOÁN HỌC */
         const mathSymbols = ['π', '√x', '∫', 'Σ', '∞', 'lim', 'α', 'β', 'f(x)'];
         document.addEventListener('click', (e) => {
-            if (isOpened && !e.target.closest('.admin-panel') && !e.target.closest('.admin-modal') && !e.target.closest('.custom-confirm-modal')) {
+            if (isOpened && !e.target.closest('.admin-panel') && !e.target.closest('.admin-modal') && !e.target.closest('.custom-confirm-modal') && e.target.tagName !== 'BUTTON') {
                 spawnParticle(e.clientX, e.clientY);
             }
         });
@@ -671,45 +834,51 @@
             const p = document.createElement('div');
             p.className = 'math-particle';
             p.innerText = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
-            
             const dx = (Math.random() - 0.5) * 140 + 'px';
             const dy = (Math.random() - 0.5) * 140 - 30 + 'px';
-            
             p.style.setProperty('--dx', dx);
             p.style.setProperty('--dy', dy);
             p.style.left = x + 'px';
             p.style.top = y + 'px';
-
             document.body.appendChild(p);
             setTimeout(() => p.remove(), 1200);
         }
 
-        /* ================= 3. SUBMIT FORM & CHỐNG SPAM (60s) ================= */
-        document.querySelectorAll('input[name="status"]').forEach(r => {
-            r.addEventListener('change', (e) => {
-                document.getElementById('guests-field').style.display = e.target.value.includes('vắng') ? 'none' : 'block';
-            });
-        });
+        /* HIỆU ỨNG PHÁO HOA KHI GỬI XONG */
+        function shootConfetti() {
+            const colors = ['#FF2A54', '#FF7B29', '#FDE047', '#3B82F6', '#10B981'];
+            for (let i = 0; i < 50; i++) {
+                let confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.setProperty('--vx', (Math.random() - 0.5) * 200 + 'px');
+                confetti.style.animation = `fall ${Math.random() * 1 + 1}s ease-in forwards`;
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 2000);
+            }
+        }
 
+        /* 3. SUBMIT FORM & CHỐNG SPAM (60 PHÚT) */
         async function handleFormSubmit(e) {
             e.preventDefault();
 
-            const COOLDOWN_MS = 60000;
+            const COOLDOWN_MS = 3600000; // 60 Phút
             const lastSubmitTs = localStorage.getItem('last_rsvp_ts');
             if (lastSubmitTs && (Date.now() - parseInt(lastSubmitTs)) < COOLDOWN_MS) {
-                const remainingSec = Math.ceil((COOLDOWN_MS - (Date.now() - parseInt(lastSubmitTs))) / 1000);
-                showFeedback(`⏳ Bạn vừa gửi. Vui lòng đợi ${remainingSec} giây nữa trước khi gửi lại!`, "red");
+                const remainingMin = Math.ceil((COOLDOWN_MS - (Date.now() - parseInt(lastSubmitTs))) / 60000);
+                showFeedback(`Bạn vừa gửi. Vui lòng đợi ${remainingMin} phút nữa trước khi gửi lại!`, "red");
                 return;
             }
 
             const btn = document.getElementById('submit-btn');
             btn.disabled = true;
-            btn.innerText = "⏳ ĐANG GỬI...";
+            btn.innerText = "ĐANG GỬI...";
 
             const payload = {
                 name: document.getElementById('input-name').value.trim(),
                 status: document.querySelector('input[name="status"]:checked').value,
-                guests: parseInt(document.getElementById('input-guests').value) || 0,
+                guests: 0, // Trường guests được vô hiệu hóa ở UI, ép bằng 0 để an toàn cho CSDL
                 message: document.getElementById('input-message').value.trim(),
                 created_at: new Date().toISOString()
             };
@@ -729,19 +898,23 @@
                 if (!response.ok) throw new Error("Lỗi máy chủ!");
 
                 localStorage.setItem('last_rsvp_ts', Date.now().toString());
-                showFeedback("🎉 Cảm ơn bạn đã gửi phản hồi thành công!", "#10B981");
+                
+                // Kích hoạt bắn pháo hoa
+                shootConfetti();
+                
+                showFeedback("Cảm ơn bạn đã gửi phản hồi thành công!", "#10B981");
                 document.getElementById('rsvpForm').reset();
-                btn.innerText = "✓ ĐÃ GỬI THÀNH CÔNG";
+                btn.innerText = "ĐÃ GỬI THÀNH CÔNG";
 
                 setTimeout(() => {
                     btn.disabled = false;
-                    btn.innerText = "✉️ GỬI PHẢN HỒI XÁC NHẬN";
+                    btn.innerText = "GỬI PHẢN HỒI XÁC NHẬN";
                 }, 4000);
 
             } catch (err) {
                 btn.disabled = false;
                 btn.innerText = "THỬ LẠI";
-                showFeedback(`❌ Lỗi gửi: Vui lòng thử lại.`, "red");
+                showFeedback(`Lỗi gửi: Vui lòng thử lại.`, "red");
             }
         }
 
@@ -751,7 +924,7 @@
             fb.innerText = text;
         }
 
-        /* ================= 4. ADMIN DASHBOARD ================= */
+        /* 4. ADMIN DASHBOARD */
         function openAdminModal() { document.getElementById('adminModal').style.display = 'flex'; }
         function closeAdminModal() { document.getElementById('adminModal').style.display = 'none'; }
         function closeAdminPanel() { document.getElementById('adminPanel').style.display = 'none'; }
@@ -771,7 +944,7 @@
 
         async function fetchRSVPData() {
             const tbody = document.getElementById('rsvp-table-body');
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Đang tải dữ liệu...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Đang tải dữ liệu...</td></tr>';
 
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/rsvps?select=*&order=created_at.desc`, {
@@ -789,19 +962,18 @@
                 updateStats(globalRSVPData);
                 renderTableData(globalRSVPData);
             } catch(e) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Lỗi kết nối CSDL.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Lỗi kết nối CSDL.</td></tr>`;
             }
         }
 
         function updateStats(dataList) {
-            let attend = 0, guests = 0, absent = 0;
+            let attend = 0, absent = 0;
             dataList.forEach(item => {
                 const isYes = item.status && item.status.includes('Có');
-                if (isYes) { attend++; guests += (parseInt(item.guests) || 0); }
+                if (isYes) attend++; 
                 else absent++;
             });
             document.getElementById('stat-attending').innerText = attend;
-            document.getElementById('stat-guests').innerText = guests;
             document.getElementById('stat-absent').innerText = absent;
         }
 
@@ -810,7 +982,7 @@
             tbody.innerHTML = '';
 
             if (!Array.isArray(dataList) || dataList.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Không tìm thấy dữ liệu.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Không có dữ liệu.</td></tr>';
                 return;
             }
 
@@ -818,36 +990,47 @@
                 const isYes = item.status && item.status.includes('Có');
                 const d = new Date(item.created_at || Date.now());
                 const timeStr = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+                
+                /* Đảm bảo màu Xanh khi tham gia và màu Đỏ khi từ chối, kèm nowrap để chữ không đè nhau */
+                const badgeStyle = isYes ? 'background:#DEF7EC; color:#03543F;' : 'background:#FDE8E8; color:#9B1C1C;';
 
                 tbody.innerHTML += `
                     <tr>
                         <td style="color:#64748B; font-size:12px;">${timeStr}</td>
                         <td style="font-weight:700;">${item.name || '-'}</td>
-                        <td><span style="padding:4px 8px; border-radius:6px; font-weight:700; font-size:12px; background:${isYes ? '#DEF7EC' : '#FDE8E8'}; color:${isYes ? '#03543F' : '#9B1C1C'}">${item.status || '-'}</span></td>
-                        <td style="text-align:center;">${item.guests || 0}</td>
+                        <td><span class="status-badge" style="${badgeStyle}">${item.status || '-'}</span></td>
                         <td>${item.message || '-'}</td>
                         <td style="text-align:center;">
-                            <button onclick="openConfirmModal('${item.id}', '${(item.name || 'Không tên').replace(/'/g, "\\'")}')" class="btn-delete" title="Xóa phản hồi này">🗑️</button>
+                            <button onclick="openConfirmModal('${item.id}', '${(item.name || 'Không tên').replace(/'/g, "\\'")}')" class="btn-delete-minimal">✕ Xóa</button>
                         </td>
                     </tr>
                 `;
             });
         }
 
+        /* 5. TÌM KIẾM THÔNG MINH (KHÔNG DẤU) */
         function filterTableByName() {
-            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const queryRaw = document.getElementById('search-input').value.trim().toLowerCase();
+            const query = removeVietnameseTones(queryRaw);
+            
             if (!query) {
                 renderTableData(globalRSVPData);
                 return;
             }
-            const filtered = globalRSVPData.filter(item => (item.name || '').toLowerCase().includes(query));
+            
+            const filtered = globalRSVPData.filter(item => {
+                const nameRaw = (item.name || '').toLowerCase();
+                const nameNoTones = removeVietnameseTones(nameRaw);
+                return nameNoTones.includes(query);
+            });
+            
             renderTableData(filtered);
         }
 
-        /* ================= 5. CUSTOM DELETE CONFIRMATION ================= */
+        /* 6. XÓA DỮ LIỆU */
         function openConfirmModal(id, name) {
             pendingDeleteId = id;
-            document.getElementById('confirmDeleteMsg').innerHTML = `Bạn có chắc chắn muốn <b>XÓA vĩnh viễn</b> phản hồi của <b>"${name}"</b> không?<br><br><span style="color:#EF4444; font-size:13px;">Hành động này không thể hoàn tác!</span>`;
+            document.getElementById('confirmDeleteMsg').innerHTML = `Xóa dữ liệu của <b>${name}</b>?<br><span style="color:#EF4444; font-size:13px;">Hành động này không thể hoàn tác.</span>`;
             document.getElementById('confirmDeleteModal').style.display = 'flex';
         }
 
@@ -874,15 +1057,14 @@
 
                 if (!response.ok) throw new Error("Xóa thất bại");
                 
-                // Cập nhật lại UI sau khi xóa thành công
                 closeConfirmModal();
-                document.getElementById('search-input').value = ''; // Reset thanh tìm kiếm
-                fetchRSVPData(); // Tải lại bảng và thống kê
+                document.getElementById('search-input').value = ''; 
+                fetchRSVPData(); 
 
             } catch (error) {
                 alert("Lỗi: Không thể xóa dữ liệu lúc này!");
             } finally {
-                btnDelete.innerText = 'Có, Xóa luôn';
+                btnDelete.innerText = 'Xóa vĩnh viễn';
                 btnDelete.disabled = false;
             }
         }
