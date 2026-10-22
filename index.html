@@ -9,12 +9,13 @@
     
     <style>
         :root {
+            /* Tông màu Đỏ tươi pha Cam Gradient */
             --primary-red: #FF2A54;
             --primary-orange: #FF7B29;
             --gradient-main: linear-gradient(135deg, var(--primary-red), var(--primary-orange));
             --gradient-hover: linear-gradient(135deg, #E61E45, #E6661C);
             --light-bg: #FFFFFF;
-            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-bg: rgba(255, 255, 255, 0.92);
             --card-border: rgba(255, 42, 84, 0.15);
             --text-dark: #1E293B;
             --text-muted: #64748B;
@@ -91,34 +92,35 @@
             stroke-width: 3;
             stroke-linecap: round;
             vector-effect: non-scaling-stroke;
-            stroke-dasharray: 1000;
-            stroke-dashoffset: 1000;
+            /* Đặt độ dài nét rất lớn để tạo hiệu ứng vẽ liền mạch, không đứt đoạn */
+            stroke-dasharray: 2000;
+            stroke-dashoffset: 2000;
         }
 
-        /* 3 đường đồ thị riêng biệt, nét liền, vẽ tự động */
+        /* 3 đường đồ thị riêng biệt, nét liền */
         .line-1 {
             stroke: var(--primary-red);
-            animation: drawContinuous 6s ease-in-out infinite alternate;
+            animation: drawContinuous 5s ease-in-out infinite alternate;
         }
 
         .line-2 {
             stroke: var(--primary-orange);
-            animation: drawContinuous 8s ease-in-out infinite alternate-reverse;
+            animation: drawContinuous 7s ease-in-out infinite alternate-reverse;
         }
 
         .line-3 {
-            stroke: #FF8A9F; /* Đỏ nhạt */
-            animation: drawContinuous 7s ease-in-out infinite alternate;
+            stroke: #FF8A9F; 
+            animation: drawContinuous 6s ease-in-out infinite alternate;
         }
 
         @keyframes drawContinuous {
-            0% { stroke-dashoffset: 1000; }
+            0% { stroke-dashoffset: 2000; }
             100% { stroke-dashoffset: 0; }
         }
 
         .bg-symbol {
             position: absolute;
-            color: rgba(100, 116, 139, 0.1); 
+            color: rgba(100, 116, 139, 0.08); 
             font-family: 'Georgia', serif;
             font-style: italic;
             font-weight: bold;
@@ -323,6 +325,8 @@
             border-radius: 16px;
             padding: 20px;
             text-align: left;
+            display: flex;
+            flex-direction: column;
         }
 
         .info-label {
@@ -335,6 +339,40 @@
         }
 
         .info-value { font-size: 15px; font-weight: 700; color: var(--text-dark); }
+
+        /* Countdown Timer Styles */
+        .countdown-container {
+            display: flex;
+            gap: 6px;
+            margin-top: auto; /* Push to bottom if content varies */
+            padding-top: 15px;
+        }
+        
+        .cd-item {
+            background: rgba(255, 42, 84, 0.08);
+            border: 1px solid rgba(255, 42, 84, 0.15);
+            border-radius: 8px;
+            padding: 8px 4px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .cd-item span {
+            display: block;
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--primary-red);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .cd-item small {
+            display: block;
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
 
         .btn-primary {
             display: inline-flex;
@@ -495,7 +533,7 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr; /* Rút xuống còn 2 cột */
+            grid-template-columns: 1fr 1fr;
             gap: 16px;
             margin-bottom: 24px;
         }
@@ -633,7 +671,7 @@
             </h1>
 
             <div class="emotional-quote">
-                "Cuộc đời có vô số biến, nhưng tình bạn của tập thể lớp Toán chúng ta luôn là một hằng số bất biến theo thời gian. Dù sau này mỗi người vẽ nên một đồ thị sự nghiệp riêng, những kỷ niệm thanh xuân vẫn sẽ là gốc tọa độ chung để tất cả cùng tìm về. Giới hạn của bài toán nào cũng có thể giải được, nhưng tình bạn và sự gắn kết của chúng ta sẽ mãi mãi tiệm cận đến vô cực."
+                "Hàm số thời gian dẫu trôi về vô cực, những phương trình năm ấy có thể phai nhòa, nhưng tình Anh em và ký ức thanh xuân dưới mái trường vẫn mãi là hằng số. Trân trọng kính mời bạn trở về chốn xưa, cùng ôn lại những năm tháng rực rỡ nhất!"
             </div>
 
             <div class="math-badges">
@@ -646,6 +684,14 @@
                 <div class="info-box">
                     <div class="info-label">🕒 THỜI GIAN</div>
                     <div class="info-value" id="display-time">17h00 • Ngày 25/10/2026</div>
+                    
+                    <!-- Countdown Timer -->
+                    <div class="countdown-container" id="countdown">
+                        <div class="cd-item"><span id="cd-d">00</span><small>Ngày</small></div>
+                        <div class="cd-item"><span id="cd-h">00</span><small>Giờ</small></div>
+                        <div class="cd-item"><span id="cd-m">00</span><small>Phút</small></div>
+                        <div class="cd-item"><span id="cd-s">00</span><small>Giây</small></div>
+                    </div>
                 </div>
                 <div class="info-box">
                     <div class="info-label">📍 ĐỊA ĐIỂM</div>
@@ -674,11 +720,11 @@
                     <label class="form-label">Xác nhận tham dự *</label>
                     <div class="radio-group">
                         <label class="radio-card">
-                            <input type="radio" name="status" value="Có, chắc chắn đến" checked required>
+                            <input type="radio" name="status" value="Có, chắc chắn đến 🎉" checked required>
                             <span style="display:flex; align-items:center; gap:8px;">Có, chắc chắn đến 🎉</span>
                         </label>
                         <label class="radio-card">
-                            <input type="radio" name="status" value="Rất tiếc, vắng mặt">
+                            <input type="radio" name="status" value="Rất tiếc, vắng mặt 🙏">
                             <span style="display:flex; align-items:center; gap:8px;">Rất tiếc, vắng mặt 🙏</span>
                         </label>
                     </div>
@@ -858,6 +904,37 @@
                 setTimeout(() => confetti.remove(), 2000);
             }
         }
+
+        /* LIVE COUNTDOWN TIMER */
+        function startCountdown() {
+            // Target: 17:00:00, October 25, 2026 (Vietnam Time / GMT+7)
+            const targetDate = new Date("2026-10-25T17:00:00+07:00").getTime();
+            
+            const timer = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = targetDate - now;
+
+                if (distance < 0) {
+                    clearInterval(timer);
+                    document.getElementById("countdown").innerHTML = "<div style='color:var(--primary-red); font-weight:700; width:100%; text-align:center;'>Sự kiện đang diễn ra!</div>";
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById("cd-d").innerText = days.toString().padStart(2, '0');
+                document.getElementById("cd-h").innerText = hours.toString().padStart(2, '0');
+                document.getElementById("cd-m").innerText = minutes.toString().padStart(2, '0');
+                document.getElementById("cd-s").innerText = seconds.toString().padStart(2, '0');
+            }, 1000);
+        }
+        
+        // Start countdown when DOM is ready
+        window.addEventListener('DOMContentLoaded', startCountdown);
+
 
         /* 3. SUBMIT FORM & CHỐNG SPAM (60 PHÚT) */
         async function handleFormSubmit(e) {
